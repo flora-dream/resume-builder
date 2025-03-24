@@ -168,12 +168,10 @@ const computedStyles = computed(() => {
 }
 
 .resume-header {
-  border-bottom: 2px solid var(--primary-color, #2c3e50);
-  padding-bottom: 20px;
-  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .header-main .name {

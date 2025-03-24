@@ -1,0 +1,23 @@
+/* 所有简历模板的共享样式 */
+.resume-template {
+  background-color: white;
+  box-sizing: border-box;
+  position: relative;
+  overflow: auto; /* 允许内容滚动 */
+  
+  /* 统一基础字体大小和间距 */
+  font-size: 10pt;
+  line-height: 1.5;
+  
+  /* 统一标题样式 */
+  --h1-size: 18pt;
+  --h2-size: 14pt;
+  --h3-size: 12pt;
+  --h4-size: 11pt;
+}
+
+/* 确保各模板使用标准的标题大小 */
+.resume-template h1 { font-size: var(--h1-size) !important; }
+.resume-template h2 { font-size: var(--h2-size) !important; }
+.resume-template h3 { font-size: var(--h3-size) !important; }
+.resume-template h4 { font-size: var(--h4-size) !important; }

@@ -153,7 +153,7 @@ const exportPDF = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
+  padding: 20px;
   min-height: 500px;
   position: relative;
 }
@@ -161,8 +161,8 @@ const exportPDF = async () => {
 .preview-wrapper {
   width: 210mm;
   height: 297mm;
-  transform: scale(0.28);
-  transform-origin: center top;
+  transform: scale(0.88);
+  transform-origin: center center;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: white;
   overflow: hidden;

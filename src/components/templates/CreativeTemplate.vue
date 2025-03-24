@@ -537,4 +537,20 @@ const props = defineProps({
 .cert-link:hover {
   text-decoration: underline;
 }
+
+/* 添加打印样式 */
+@media print {
+  .creative-template {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    box-shadow: none !important;
+    transform: none !important;
+    zoom: 100% !important;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
 </style> 
