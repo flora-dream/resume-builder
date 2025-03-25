@@ -57,55 +57,96 @@ export const useResumeStore = defineStore('resume', {
   }),
   
   actions: {
+    // 从本地存储加载数据
+    loadFromLocalStorage() {
+      try {
+        const resumeData = localStorage.getItem('resume-data');
+        const themeOptions = localStorage.getItem('theme-options');
+        
+        if (resumeData) {
+          this.resumeData = JSON.parse(resumeData);
+        }
+        
+        if (themeOptions) {
+          this.themeOptions = JSON.parse(themeOptions);
+        }
+        
+        // selectedTemplate 已在 state 初始化时加载
+      } catch (error) {
+        console.error('加载本地存储数据失败:', error);
+      }
+    },
+    
+    // 保存数据到本地存储
+    saveToLocalStorage() {
+      try {
+        localStorage.setItem('resume-data', JSON.stringify(this.resumeData));
+        localStorage.setItem('theme-options', JSON.stringify(this.themeOptions));
+        // selectedTemplate 在 selectTemplate 方法中保存
+      } catch (error) {
+        console.error('保存数据到本地存储失败:', error);
+      }
+    },
+    
     // 选择模板并保存到本地存储
     selectTemplate(templateId) {
       this.selectedTemplate = templateId;
       localStorage.setItem('selectedTemplate', templateId);
+      this.saveToLocalStorage();
     },
     
     // 更新简历数据
     updateResumeData(section, data) {
       this.resumeData[section] = data;
+      this.saveToLocalStorage();
     },
     
     // 更新个人信息字段
     updatePersonalInfo(field, value) {
       this.resumeData.personalInfo[field] = value;
+      this.saveToLocalStorage();
     },
     
     // 添加教育经历
     addEducation(education) {
       this.resumeData.education.push(education);
+      this.saveToLocalStorage();
     },
     
     // 更新教育经历
     updateEducation(index, education) {
       this.resumeData.education[index] = education;
+      this.saveToLocalStorage();
     },
     
     // 删除教育经历
     deleteEducation(index) {
       this.resumeData.education.splice(index, 1);
+      this.saveToLocalStorage();
     },
     
     // 添加工作经验
     addWorkExperience(experience) {
       this.resumeData.workExperience.push(experience);
+      this.saveToLocalStorage();
     },
     
     // 更新工作经验
     updateWorkExperience(index, experience) {
       this.resumeData.workExperience[index] = experience;
+      this.saveToLocalStorage();
     },
     
     // 删除工作经验
     deleteWorkExperience(index) {
       this.resumeData.workExperience.splice(index, 1);
+      this.saveToLocalStorage();
     },
     
     // 更新主题选项
     updateThemeOption(option, value) {
       this.themeOptions[option] = value;
+      this.saveToLocalStorage();
     },
     
     // 获取模板详细信息
