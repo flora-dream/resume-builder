@@ -30,6 +30,7 @@ import jsPDF from 'jspdf';
 import ClassicTemplate from '../components/templates/ClassicTemplate.vue';
 import CreativeTemplate from '../components/templates/CreativeTemplate.vue';
 import MinimalTemplate from '../components/templates/MinimalTemplate.vue';
+import ModernTemplate from '../components/templates/ModernTemplate.vue';
 
 const router = useRouter();
 const resumeStore = useResumeStore();
@@ -44,6 +45,8 @@ const templateComponent = computed(() => {
       return CreativeTemplate;
     case 'minimal':
       return MinimalTemplate;
+    case 'modern':
+      return ModernTemplate;
     default:
       return ClassicTemplate;
   }
@@ -70,7 +73,10 @@ const exportPDF = async () => {
       scale: 2, // 提高清晰度
       useCORS: true, // 允许加载跨域图片
       logging: false,
-      backgroundColor: '#FFFFFF'
+      backgroundColor: '#FFFFFF',
+      // 增加头像处理相关选项
+      allowTaint: true, // 允许污染画布，以支持本地图片
+      imageTimeout: 0 // 禁用图片加载超时
     });
 
     const imgData = canvas.toDataURL('image/png');

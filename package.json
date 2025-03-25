@@ -10,11 +10,14 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "cropperjs": "^1.5.12",
     "element-plus": "^2.9.7",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
     "pinia": "^3.0.1",
     "vue": "^3.5.13",
+    "vue-advanced-cropper": "^2.8.9",
+    "vue-cropperjs": "^5.0.0",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {

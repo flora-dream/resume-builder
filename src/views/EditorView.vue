@@ -7,6 +7,7 @@
           <el-option label="经典模板" value="classic" />
           <el-option label="创意模板" value="creative" />
           <el-option label="极简模板" value="minimal" />
+          <el-option label="现代模板" value="modern" />
         </el-select>
       </div>
     </header>
@@ -71,6 +72,7 @@ import CertificationsForm from '../components/editor/CertificationsForm.vue';
 import ClassicTemplate from '../components/templates/ClassicTemplate.vue';
 import CreativeTemplate from '../components/templates/CreativeTemplate.vue';
 import MinimalTemplate from '../components/templates/MinimalTemplate.vue';
+import ModernTemplate from '../components/templates/ModernTemplate.vue';
 
 const router = useRouter();
 const resumeStore = useResumeStore();
@@ -87,6 +89,8 @@ const templateComponent = computed(() => {
       return CreativeTemplate;
     case 'minimal':
       return MinimalTemplate;
+    case 'modern':
+      return ModernTemplate;
     default:
       return ClassicTemplate;
   }

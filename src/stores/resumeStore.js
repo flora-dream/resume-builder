@@ -9,9 +9,10 @@ export const useResumeStore = defineStore('resume', {
         email: '',
         phone: '',
         location: '',
+        linkedin: '',
         website: '',
-        avatar: '',
-        summary: ''
+        summary: '',
+        avatar: null
       },
       education: [],
       workExperience: [],
