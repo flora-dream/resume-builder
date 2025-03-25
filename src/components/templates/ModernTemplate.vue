@@ -45,17 +45,15 @@
           <div class="experience-list">
             <div v-for="(job, index) in resumeData.workExperience" :key="index" class="experience-item">
               <div class="experience-header">
-                <div class="experience-title-company">
-                  <h3 class="experience-title">{{ job.title }}</h3>
-                  <p class="experience-company">{{ job.company }}</p>
+                <div class="experience-company-position">
+                  <h3 class="experience-company">{{ job.company }}</h3>
+                  <p class="experience-position">{{ job.position }}</p>
                 </div>
                 <div class="experience-period">
-                  <span>{{ job.startDate }}</span>
-                  <span v-if="job.endDate"> - {{ job.endDate }}</span>
-                  <span v-else> - 至今</span>
+                  {{ job.startDate }}<span v-if="job.endDate"> - {{ job.endDate }}</span><span v-else-if="job.current"> - 至今</span>
                 </div>
               </div>
-              <p class="experience-description">{{ job.description }}</p>
+              <p v-if="job.description" class="experience-description">{{ job.description }}</p>
               <ul v-if="job.achievements && job.achievements.length > 0" class="achievements-list">
                 <li v-for="(achievement, achievementIndex) in job.achievements" :key="achievementIndex">
                   {{ achievement }}
@@ -324,20 +322,21 @@ const computedStyles = computed(() => {
 .experience-list {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 18px;
 }
 
 .experience-item {
   padding-left: 15px;
   border-left: 2px solid var(--accent-color, #f0f0f0);
   position: relative;
+  padding-bottom: 6px;
 }
 
 .experience-item::before {
   content: '';
   position: absolute;
   left: -7px;
-  top: 6px;
+  top: 9px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -348,43 +347,58 @@ const computedStyles = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.experience-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+.experience-company-position {
+  display: flex;
+  flex-direction: column;
 }
 
 .experience-company {
-  margin: 4px 0 0;
-  font-size: 14px;
-  color: #666;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--primary-color, #3a7bd5);
+  line-height: 1.3;
+}
+
+.experience-position {
+  margin: 3px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  line-height: 1.3;
 }
 
 .experience-period {
-  font-size: 14px;
-  color: #888;
+  font-size: 12px;
+  color: #777;
   white-space: nowrap;
+  background-color: rgba(0,0,0,0.03);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-top: 2px;
 }
 
 .experience-description {
-  margin: 8px 0;
-  font-size: 14px;
+  margin: 6px 0;
+  font-size: 13px;
   color: #555;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .achievements-list {
-  margin: 10px 0 0;
-  padding-left: 20px;
+  margin: 8px 0 0;
+  padding-left: 18px;
 }
 
 .achievements-list li {
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   position: relative;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #555;
 }
 
 /* 项目经验样式 */
@@ -688,6 +702,16 @@ const computedStyles = computed(() => {
   }
   
   .skill-points li:before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .experience-item::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .experience-period {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
