@@ -20,7 +20,7 @@ export const useResumeStore = defineStore('resume', {
       projects: [],
       certifications: []
     },
-    selectedTemplate: 'classic',  // 默认使用经典模板
+    selectedTemplate: localStorage.getItem('selectedTemplate') || 'classic', // 从本地存储中获取或使用默认模板
     themeOptions: {
       primaryColor: '#2c3e50',
       secondaryColor: '#3498db',
@@ -30,72 +30,97 @@ export const useResumeStore = defineStore('resume', {
       bodyFont: 'Arial, sans-serif',
       fontSize: '14px',
       layoutType: 'standard'
+    },
+    // 添加模板详情信息
+    templateInfo: {
+      classic: {
+        name: '经典模板',
+        description: '传统专业风格，适合多数行业的求职者',
+        thumbnail: 'classic-preview'
+      },
+      creative: {
+        name: '创意模板',
+        description: '现代创新风格，适合设计和创意行业的求职者',
+        thumbnail: 'creative-preview'
+      },
+      minimal: {
+        name: '极简模板',
+        description: '简约风格，留白设计，突出重点内容',
+        thumbnail: 'minimal-preview'
+      },
+      modern: {
+        name: '现代模板',
+        description: '现代专业风格，平衡视觉效果和内容展示',
+        thumbnail: 'modern-preview'
+      }
     }
   }),
   
   actions: {
-    updatePersonalInfo(data) {
-      this.resumeData.personalInfo = { ...this.resumeData.personalInfo, ...data }
-      this.saveToLocalStorage()
-    },
-    
-    updateEducation(data) {
-      this.resumeData.education = data
-      this.saveToLocalStorage()
-    },
-    
-    updateWorkExperience(data) {
-      this.resumeData.workExperience = data
-      this.saveToLocalStorage()
-    },
-    
-    updateSkills(data) {
-      this.resumeData.skills = data
-      this.saveToLocalStorage()
-    },
-    
-    updateProjects(data) {
-      this.resumeData.projects = data
-      this.saveToLocalStorage()
-    },
-    
-    updateCertifications(data) {
-      this.resumeData.certifications = data
-      this.saveToLocalStorage()
-    },
-    
+    // 选择模板并保存到本地存储
     selectTemplate(templateId) {
-      this.selectedTemplate = templateId
-      this.saveToLocalStorage()
+      this.selectedTemplate = templateId;
+      localStorage.setItem('selectedTemplate', templateId);
     },
     
-    updateThemeOptions(options) {
-      this.themeOptions = { ...this.themeOptions, ...options }
-      this.saveToLocalStorage()
+    // 更新简历数据
+    updateResumeData(section, data) {
+      this.resumeData[section] = data;
     },
     
-    saveToLocalStorage() {
-      localStorage.setItem('resumeData', JSON.stringify(this.resumeData))
-      localStorage.setItem('selectedTemplate', this.selectedTemplate)
-      localStorage.setItem('themeOptions', JSON.stringify(this.themeOptions))
+    // 更新个人信息字段
+    updatePersonalInfo(field, value) {
+      this.resumeData.personalInfo[field] = value;
     },
     
-    loadFromLocalStorage() {
-      const resumeData = localStorage.getItem('resumeData')
-      const selectedTemplate = localStorage.getItem('selectedTemplate')
-      const themeOptions = localStorage.getItem('themeOptions')
-      
-      if (resumeData) {
-        this.resumeData = JSON.parse(resumeData)
-      }
-      
-      if (selectedTemplate) {
-        this.selectedTemplate = selectedTemplate
-      }
-      
-      if (themeOptions) {
-        this.themeOptions = JSON.parse(themeOptions)
-      }
+    // 添加教育经历
+    addEducation(education) {
+      this.resumeData.education.push(education);
+    },
+    
+    // 更新教育经历
+    updateEducation(index, education) {
+      this.resumeData.education[index] = education;
+    },
+    
+    // 删除教育经历
+    deleteEducation(index) {
+      this.resumeData.education.splice(index, 1);
+    },
+    
+    // 添加工作经验
+    addWorkExperience(experience) {
+      this.resumeData.workExperience.push(experience);
+    },
+    
+    // 更新工作经验
+    updateWorkExperience(index, experience) {
+      this.resumeData.workExperience[index] = experience;
+    },
+    
+    // 删除工作经验
+    deleteWorkExperience(index) {
+      this.resumeData.workExperience.splice(index, 1);
+    },
+    
+    // 更新主题选项
+    updateThemeOption(option, value) {
+      this.themeOptions[option] = value;
+    },
+    
+    // 获取模板详细信息
+    getTemplateInfo(templateId) {
+      return this.templateInfo[templateId] || this.templateInfo.classic;
     }
+  },
+  
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'resume-data',
+        storage: localStorage
+      }
+    ]
   }
 }) 

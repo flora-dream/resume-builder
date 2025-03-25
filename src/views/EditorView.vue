@@ -2,18 +2,30 @@
   <div class="editor-page">
     <header class="header">
       <h1>简历制作工具</h1>
-      <div class="template-selector">
-        <el-select v-model="selectedTemplate" placeholder="选择模板" @change="changeTemplate">
-          <el-option label="经典模板" value="classic" />
-          <el-option label="创意模板" value="creative" />
-          <el-option label="极简模板" value="minimal" />
-          <el-option label="现代模板" value="modern" />
-        </el-select>
-      </div>
     </header>
 
     <main class="main-content">
       <div class="editor-section">
+        <!-- 模板选择卡片 -->
+        <div class="template-selector-cards">
+          <h3>选择模板样式</h3>
+          <div class="template-cards">
+            <div 
+              v-for="(template, id) in templateInfo" 
+              :key="id"
+              class="template-card" 
+              :class="{ 'active': selectedTemplate === id }"
+              @click="changeTemplate(id)"
+            >
+              <div class="template-preview" :class="template.thumbnail"></div>
+              <div class="template-info">
+                <div class="template-name">{{ template.name }}</div>
+                <div class="template-desc" v-if="selectedTemplate === id">{{ template.description }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <el-tabs v-model="activeTab">
           <el-tab-pane label="个人信息" name="personalInfo">
             <personal-info-form />
@@ -60,6 +72,9 @@ import { useResumeStore } from '../stores/resumeStore';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
+// 导入模板缩略图样式
+import '../assets/template-thumbnails.css';
+
 // 导入表单组件
 import PersonalInfoForm from '../components/editor/PersonalInfoForm.vue';
 import EducationForm from '../components/editor/EducationForm.vue';
@@ -79,6 +94,7 @@ const resumeStore = useResumeStore();
 
 const activeTab = ref('personalInfo');
 const selectedTemplate = ref(resumeStore.selectedTemplate);
+const templateInfo = computed(() => resumeStore.templateInfo);
 
 // 计算当前选择的模板组件
 const templateComponent = computed(() => {
@@ -98,6 +114,7 @@ const templateComponent = computed(() => {
 
 // 切换模板
 const changeTemplate = (value) => {
+  selectedTemplate.value = value;
   resumeStore.selectTemplate(value);
 };
 
