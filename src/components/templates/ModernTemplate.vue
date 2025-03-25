@@ -69,11 +69,45 @@
             <div v-for="(project, index) in resumeData.projects" :key="index" class="project-item">
               <div class="project-header">
                 <h3 class="project-title">{{ project.name }}</h3>
-                <span class="project-date">{{ project.date }}</span>
+                <span class="project-date">{{ project.startDate }}{{ project.endDate ? ` - ${project.endDate}` : '' }}</span>
               </div>
+              
               <p class="project-description">{{ project.description }}</p>
-              <div v-if="project.link" class="project-link">
-                <a :href="project.link" target="_blank">项目链接</a>
+              
+              <div v-if="project.value" class="project-value">
+                <span class="value-label">项目价值：</span>
+                <span class="value-content">{{ project.value }}</span>
+              </div>
+              
+              <div v-if="project.technologies && project.technologies.length > 0" class="project-technologies">
+                <span class="tech-label">技术栈：</span>
+                <div class="tech-tags">
+                  <span v-for="(tech, techIndex) in project.technologies" :key="techIndex" class="tech-tag">
+                    {{ tech }}
+                  </span>
+                </div>
+              </div>
+              
+              <div v-if="project.highlights && project.highlights.length > 0" class="project-highlights">
+                <span class="highlights-label">项目亮点：</span>
+                <ul class="highlights-list">
+                  <li v-for="(highlight, highlightIndex) in project.highlights" :key="highlightIndex">
+                    {{ highlight }}
+                  </li>
+                </ul>
+              </div>
+              
+              <div v-if="project.outcomes && project.outcomes.length > 0" class="project-outcomes">
+                <span class="outcomes-label">项目成果：</span>
+                <ul class="outcomes-list">
+                  <li v-for="(outcome, outcomeIndex) in project.outcomes" :key="outcomeIndex">
+                    {{ outcome }}
+                  </li>
+                </ul>
+              </div>
+              
+              <div v-if="project.url" class="project-link">
+                <a :href="project.url" target="_blank">项目链接</a>
               </div>
             </div>
           </div>
@@ -116,14 +150,12 @@
                 <div class="skill-bar" :style="{ width: `${skill.level || 80}%` }"></div>
               </div>
               
-              <!-- 技能小项列表 -->
               <ul v-if="skill.points && skill.points.length > 0" class="skill-points">
                 <li v-for="(point, pointIndex) in skill.points" :key="pointIndex">
                   {{ point }}
                 </li>
               </ul>
               
-              <!-- 显示普通描述 -->
               <p v-else-if="skill.description" class="skill-description">{{ skill.description }}</p>
             </div>
           </div>
@@ -447,17 +479,19 @@ const computedStyles = computed(() => {
   line-height: 1.5;
 }
 
+.project-link {
+  margin-top: 8px;
+}
+
 .project-link a {
-  display: inline-block;
   color: var(--primary-color, #3a7bd5);
+  font-size: 13px;
   text-decoration: none;
-  font-weight: 500;
-  font-size: 14px;
-  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
 }
 
 .project-link a:hover {
-  color: var(--secondary-color, #00d2ff);
   text-decoration: underline;
 }
 
@@ -715,5 +749,98 @@ const computedStyles = computed(() => {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+}
+
+/* 项目展示样式 */
+.project-value {
+  margin: 8px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #555;
+}
+
+.value-label {
+  font-weight: 600;
+  color: #444;
+  margin-right: 5px;
+}
+
+.project-technologies {
+  margin: 8px 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.tech-label {
+  font-weight: 600;
+  color: #444;
+  font-size: 13px;
+  margin-right: 5px;
+  white-space: nowrap;
+  padding-top: 2px;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tech-tag {
+  font-size: 11px;
+  background-color: rgba(var(--primary-color-rgb, 58, 123, 213), 0.1);
+  color: var(--primary-color, #3a7bd5);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.project-outcomes {
+  margin: 8px 0;
+}
+
+.outcomes-label {
+  font-weight: 600;
+  color: #444;
+  font-size: 13px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.outcomes-list {
+  margin: 4px 0 0 0;
+  padding-left: 18px;
+}
+
+.outcomes-list li {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+  margin-bottom: 3px;
+}
+
+/* 添加项目亮点的样式 */
+.project-highlights {
+  margin: 8px 0;
+}
+
+.highlights-label {
+  font-weight: 600;
+  color: #444;
+  font-size: 13px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.highlights-list {
+  margin: 4px 0 0 0;
+  padding-left: 18px;
+}
+
+.highlights-list li {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+  margin-bottom: 3px;
 }
 </style>
