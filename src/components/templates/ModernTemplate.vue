@@ -112,20 +112,20 @@
             <div v-for="(skill, index) in resumeData.skills" :key="index" class="skill-item">
               <div class="skill-header">
                 <span class="skill-name">{{ skill.name }}</span>
-                <span class="skill-level-text">{{ skill.level }}%</span>
+                <span class="skill-level-badge">{{ skill.level }}%</span>
               </div>
               <div class="skill-level">
                 <div class="skill-bar" :style="{ width: `${skill.level || 80}%` }"></div>
               </div>
               
-              <!-- 显示技能小项列表 -->
+              <!-- 技能小项列表 -->
               <ul v-if="skill.points && skill.points.length > 0" class="skill-points">
                 <li v-for="(point, pointIndex) in skill.points" :key="pointIndex">
                   {{ point }}
                 </li>
               </ul>
               
-              <!-- 如果没有小项但有描述，则显示描述 -->
+              <!-- 显示普通描述 -->
               <p v-else-if="skill.description" class="skill-description">{{ skill.description }}</p>
             </div>
           </div>
@@ -291,21 +291,21 @@ const computedStyles = computed(() => {
 
 .side-column {
   flex: 1;
-  padding: 30px;
+  padding: 25px 20px;
   background-color: rgba(0, 0, 0, 0.02);
 }
 
 .resume-section {
-  margin-bottom: 30px;
+  margin-bottom: 22px;
 }
 
 .section-title {
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  padding-bottom: 6px;
   font-family: var(--heading-font, 'Roboto', Arial, sans-serif);
-  font-size: 18px;
   font-weight: 600;
   color: var(--primary-color, #3a7bd5);
-  margin: 0 0 15px 0;
-  padding-bottom: 8px;
   border-bottom: 2px solid var(--primary-color, #3a7bd5);
   position: relative;
 }
@@ -451,13 +451,20 @@ const computedStyles = computed(() => {
 .skills-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .skill-item {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+  position: relative;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s;
+}
+
+.skill-item:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
 .skill-header {
@@ -469,77 +476,116 @@ const computedStyles = computed(() => {
 
 .skill-name {
   font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.skill-level-badge {
+  font-size: 11px;
+  color: #fff;
+  background: linear-gradient(to right, var(--primary-color, #3a7bd5), var(--secondary-color, #00d2ff));
+  padding: 1px 6px;
+  border-radius: 10px;
   font-weight: 500;
-  color: #444;
 }
 
 .skill-level {
-  height: 8px;
+  height: 6px;
   background-color: #eee;
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
+  margin-bottom: 6px;
 }
 
 .skill-bar {
   height: 100%;
   background: linear-gradient(to right, var(--primary-color, #3a7bd5), var(--secondary-color, #00d2ff));
-  border-radius: 4px;
+  border-radius: 3px;
+  transition: width 0.5s;
 }
 
-.skill-level-text {
+/* 技能小项列表样式 */
+.skill-points {
+  margin: 6px 0 0 0;
+  padding-left: 15px;
   font-size: 12px;
-  color: #888;
+  color: #555;
+  line-height: 1.4;
+}
+
+.skill-points li {
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.skill-points li:before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 6px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--primary-color, #3a7bd5);
 }
 
 .skill-description {
-  margin-top: 6px;
+  margin: 5px 0 0 0;
   font-size: 12px;
-  color: #666;
+  color: #555;
   line-height: 1.4;
+  font-style: italic;
 }
 
 /* 教育背景样式 */
 .education-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 8px;
 }
 
 .education-item {
-  padding-bottom: 15px;
+  padding-bottom: 8px;
+  margin-bottom: 0;
   border-bottom: 1px solid #eee;
+}
+
+.education-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .education-school-info {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 6px;
+  align-items: center;
+  margin-bottom: 2px;
 }
 
 .education-school {
-  margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--primary-color, #3a7bd5);
+  margin: 0;
 }
 
 .education-period {
-  font-size: 13px;
+  font-size: 11px;
   color: #888;
   white-space: nowrap;
 }
 
 .education-details {
-  margin-top: 5px;
+  margin-top: 1px;
 }
 
 .education-degree-major {
   display: flex;
-  margin: 0;
-  font-size: 14px;
+  align-items: center;
+  font-size: 12px;
   color: #333;
-  line-height: 1.4;
+  line-height: 1.3;
+  margin: 0;
 }
 
 .education-degree {
@@ -547,46 +593,46 @@ const computedStyles = computed(() => {
 }
 
 .education-major {
-  margin-left: 5px;
+  margin-left: 4px;
   color: #555;
 }
 
 .education-description {
-  margin: 8px 0 0;
-  font-size: 13px;
+  margin: 3px 0 0;
+  font-size: 11px;
   color: #666;
-  line-height: 1.5;
+  line-height: 1.3;
 }
 
 /* 证书样式 */
 .certifications-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
 .certification-item {
   background-color: #f9f9f9;
-  padding: 15px;
+  padding: 10px;
   border-radius: 8px;
   border-left: 3px solid var(--primary-color, #3a7bd5);
 }
 
 .certification-name {
-  margin: 0 0 5px;
-  font-size: 15px;
+  margin: 0 0 3px;
+  font-size: 14px;
   font-weight: 600;
   color: #333;
 }
 
 .certification-issuer {
-  margin: 0 0 5px;
-  font-size: 13px;
+  margin: 0 0 3px;
+  font-size: 12px;
   color: #666;
 }
 
 .certification-date {
-  font-size: 12px;
+  font-size: 11px;
   color: #888;
 }
 
@@ -626,17 +672,24 @@ const computedStyles = computed(() => {
     transform: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   }
-}
-
-.skill-points {
-  margin: 8px 0 0 0;
-  padding-left: 18px;
-  font-size: 12px;
-  color: #666;
-  line-height: 1.4;
-}
-
-.skill-points li {
-  margin-bottom: 4px;
+  
+  .skill-item:hover {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .skill-level-badge {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .skill-bar {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .skill-points li:before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
 </style>
