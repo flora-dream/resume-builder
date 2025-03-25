@@ -110,10 +110,23 @@
           <h2 class="section-title">技能专长</h2>
           <div class="skills-container">
             <div v-for="(skill, index) in resumeData.skills" :key="index" class="skill-item">
-              <span class="skill-name">{{ skill.name }}</span>
+              <div class="skill-header">
+                <span class="skill-name">{{ skill.name }}</span>
+                <span class="skill-level-text">{{ skill.level }}%</span>
+              </div>
               <div class="skill-level">
                 <div class="skill-bar" :style="{ width: `${skill.level || 80}%` }"></div>
               </div>
+              
+              <!-- 显示技能小项列表 -->
+              <ul v-if="skill.points && skill.points.length > 0" class="skill-points">
+                <li v-for="(point, pointIndex) in skill.points" :key="pointIndex">
+                  {{ point }}
+                </li>
+              </ul>
+              
+              <!-- 如果没有小项但有描述，则显示描述 -->
+              <p v-else-if="skill.description" class="skill-description">{{ skill.description }}</p>
             </div>
           </div>
         </section>
@@ -447,6 +460,13 @@ const computedStyles = computed(() => {
   gap: 5px;
 }
 
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
 .skill-name {
   font-size: 14px;
   font-weight: 500;
@@ -464,6 +484,18 @@ const computedStyles = computed(() => {
   height: 100%;
   background: linear-gradient(to right, var(--primary-color, #3a7bd5), var(--secondary-color, #00d2ff));
   border-radius: 4px;
+}
+
+.skill-level-text {
+  font-size: 12px;
+  color: #888;
+}
+
+.skill-description {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
 }
 
 /* 教育背景样式 */
@@ -594,5 +626,17 @@ const computedStyles = computed(() => {
     transform: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   }
+}
+
+.skill-points {
+  margin: 8px 0 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.skill-points li {
+  margin-bottom: 4px;
 }
 </style>
