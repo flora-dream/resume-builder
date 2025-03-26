@@ -23,7 +23,7 @@
           <span>{{ resumeData.personalInfo.phone }}</span>
         </div>
         <div class="contact-item" v-if="resumeData.personalInfo.location">
-          <span class="contact-icon">⌖</span>
+          <span class="contact-icon">⚲</span>
           <span>{{ resumeData.personalInfo.location }}</span>
         </div>
         <div class="contact-item" v-if="resumeData.personalInfo.website">
