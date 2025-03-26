@@ -212,12 +212,13 @@ const computedStyles = computed(() => {
   display: flex;
   flex-direction: column;
   position: relative;
+  aspect-ratio: 1 / 1.414; /* A4纸张长宽比 */
 }
 
 /* 头部样式 */
 .resume-header {
   background: linear-gradient(135deg, var(--primary-color, #3a7bd5), var(--secondary-color, #00d2ff));
-  padding: 30px;
+  padding: 25px 30px;
   color: white;
   display: flex;
   justify-content: space-between;
@@ -232,8 +233,8 @@ const computedStyles = computed(() => {
 }
 
 .profile-avatar {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   overflow: hidden;
   border: 3px solid rgba(255, 255, 255, 0.6);
@@ -268,17 +269,15 @@ const computedStyles = computed(() => {
 }
 
 .name {
-  margin: 0;
+  margin: 0 0 5px 0;
   font-family: var(--heading-font, 'Roboto', Arial, sans-serif);
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 24px;
   letter-spacing: 0.5px;
 }
 
 .title {
-  margin: 5px 0 0;
-  font-size: 16px;
-  font-weight: 400;
+  margin: 0;
+  font-size: 14px;
   opacity: 0.9;
 }
 
@@ -314,40 +313,31 @@ const computedStyles = computed(() => {
 }
 
 .main-column {
-  flex: 2;
-  padding: 30px;
-  border-right: 1px solid var(--accent-color, #f0f0f0);
+  flex: 3;
+  padding: 20px;
 }
 
 .side-column {
-  flex: 1;
-  padding: 25px 20px;
-  background-color: rgba(0, 0, 0, 0.02);
+  flex: 1.5;
+  background-color: #f7f7f7;
+  padding: 20px;
+  border-left: 1px solid #e8e8e8;
 }
 
 .resume-section {
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .section-title {
-  font-size: 16px;
-  margin: 0 0 12px 0;
-  padding-bottom: 6px;
   font-family: var(--heading-font, 'Roboto', Arial, sans-serif);
-  font-weight: 600;
+  font-size: 16px;
   color: var(--primary-color, #3a7bd5);
-  border-bottom: 2px solid var(--primary-color, #3a7bd5);
-  position: relative;
-}
-
-.section-title::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 50px;
-  height: 2px;
-  background-color: var(--secondary-color, #00d2ff);
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--secondary-color, #00d2ff);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* 工作经验样式 */

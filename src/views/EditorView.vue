@@ -66,7 +66,7 @@
             </div>
           </div>
           <div class="preview-container">
-            <div class="preview-wrapper" :style="{ transform: `scale(${previewScale})` }">
+            <div class="preview-wrapper" :style="{ transform: `scale(${previewScale})`, transformOrigin: 'top center' }">
               <component :is="templateComponent" />
             </div>
           </div>
@@ -328,11 +328,13 @@ const exportPDF = async () => {
 }
 
 .preview-section {
-  width: 50%;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #f5f7fa;
-  border-left: 1px solid #ebeef5;
+  border-left: 1px solid #e6e6e6;
+  background-color: #f0f2f5;
+  height: 100%;
+  overflow: hidden;
 }
 
 .preview-header {
@@ -367,18 +369,23 @@ const exportPDF = async () => {
 .preview-container {
   flex: 1;
   overflow: auto;
+  background-color: #e9ecef;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 25px;
+  padding: 20px;
 }
 
 .preview-wrapper {
-  width: 210mm;
-  height: 297mm;
-  transform-origin: center top;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  width: 210mm; /* A4宽度 */
   background-color: white;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  transform-origin: top center;
+  transition: transform 0.3s ease;
+  max-height: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1.414; /* A4纸张长宽比 */
+  overflow: hidden;
 }
 
 /* 模板选择对话框样式 */
