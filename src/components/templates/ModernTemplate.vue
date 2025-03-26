@@ -27,7 +27,7 @@
           <span>{{ resumeData.personalInfo.location }}</span>
         </div>
         <div class="contact-item" v-if="resumeData.personalInfo.website">
-          <span class="contact-icon">🔗</span>
+          <span class="contact-icon">☍</span>
           <span>{{ resumeData.personalInfo.website }}</span>
         </div>
       </div>

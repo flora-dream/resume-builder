@@ -93,7 +93,7 @@ const removeEducation = (index) => {
 
 // 监听教育经历变化
 watch(educationList, (newValue) => {
-  resumeStore.updateEducation([...newValue]);
+  resumeStore.updateResumeData('education', [...newValue]);
 }, { deep: true });
 
 // 组件挂载时初始化数据

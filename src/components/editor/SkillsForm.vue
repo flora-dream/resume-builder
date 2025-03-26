@@ -162,7 +162,7 @@ const removeSkillPoint = (skillIndex, pointIndex) => {
 
 // 将技能数据更新到 store
 const updateSkills = () => {
-  resumeStore.updateSkills(skills.value);
+  resumeStore.updateResumeData('skills', JSON.parse(JSON.stringify(skills.value)));
 };
 </script>
 

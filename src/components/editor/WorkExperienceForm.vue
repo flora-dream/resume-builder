@@ -149,7 +149,7 @@ const removeAchievement = (job, index) => {
 
 // 监听工作经验变化
 watch(workExperienceList, (newValue) => {
-  resumeStore.updateWorkExperience([...newValue]);
+  resumeStore.updateResumeData('workExperience', [...newValue]);
 }, { deep: true });
 
 // 组件挂载时初始化数据
