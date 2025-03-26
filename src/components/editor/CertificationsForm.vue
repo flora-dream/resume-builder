@@ -35,11 +35,12 @@
           <el-col :span="2" class="action-column">
             <el-button 
               type="danger" 
-              icon="Delete" 
               circle 
               @click="removeCertification(index)"
               size="small"
-            />
+            >
+              <el-icon><Delete /></el-icon>
+            </el-button>
           </el-col>
         </el-row>
       </div>
@@ -50,6 +51,7 @@
 <script setup>
 import { reactive, watch, onMounted } from 'vue';
 import { useResumeStore } from '../../stores/resumeStore';
+import { Delete } from '@element-plus/icons-vue';
 
 const resumeStore = useResumeStore();
 
@@ -126,16 +128,37 @@ onMounted(() => {
 }
 
 .certification-item {
-  padding: 15px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  background-color: #fafafa;
+  padding: 20px;
+  border: 1px solid #eaedf1;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s;
+}
+
+.certification-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #d0d7de;
+}
+
+.certification-item .el-form-item:last-child {
+  margin-bottom: 0;
 }
 
 .action-column {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 10px;
+}
+
+.action-column .el-button {
+  transition: all 0.3s;
+}
+
+.action-column .el-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style> 

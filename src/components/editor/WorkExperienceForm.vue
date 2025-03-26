@@ -2,7 +2,10 @@
   <div class="work-experience-form">
     <div class="section-header">
       <h3>工作经验</h3>
-      <el-button type="primary" @click="addWorkExperience" size="small">添加工作经验</el-button>
+      <el-button type="primary" @click="addWorkExperience" size="small">
+        <el-icon><Plus /></el-icon>
+        添加工作经验
+      </el-button>
     </div>
 
     <div v-if="workExperienceList.length === 0" class="empty-tip">
@@ -55,7 +58,9 @@
             <div v-for="(achievement, i) in job.achievements" :key="i" class="achievement-item">
               <el-input v-model="job.achievements[i]" placeholder="工作成果或亮点">
                 <template #append>
-                  <el-button @click="removeAchievement(job, i)" icon="Delete" />
+                  <el-button class="delete-btn" @click="removeAchievement(job, i)">
+                    <el-icon><Delete /></el-icon>
+                  </el-button>
                 </template>
               </el-input>
             </div>
@@ -64,14 +69,27 @@
               size="small" 
               plain 
               @click="addAchievement(job)" 
-              icon="Plus"
-              style="margin-top: 5px;">
+              class="add-achievement-btn"
+            >
+              <el-icon><Plus /></el-icon>
               添加成果
             </el-button>
           </el-form-item>
           
           <div class="form-actions">
-            <el-button type="danger" @click="removeWorkExperience(index)" size="small">删除</el-button>
+            <el-popconfirm
+              title="确定要删除此工作经验吗？"
+              @confirm="removeWorkExperience(index)"
+              confirm-button-text="确定"
+              cancel-button-text="取消"
+            >
+              <template #reference>
+                <el-button type="danger" size="small">
+                  <el-icon><Delete /></el-icon>
+                  删除工作经验
+                </el-button>
+              </template>
+            </el-popconfirm>
           </div>
         </el-form>
       </el-collapse-item>
@@ -82,6 +100,7 @@
 <script setup>
 import { ref, reactive, watch, onMounted, nextTick } from 'vue';
 import { useResumeStore } from '../../stores/resumeStore';
+import { Plus, Delete } from '@element-plus/icons-vue';
 
 const resumeStore = useResumeStore();
 
@@ -182,12 +201,58 @@ onMounted(() => {
 }
 
 .achievement-item {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.achievement-item .delete-btn {
+  border: none;
+  background-color: transparent;
+  transition: all 0.2s;
+  color: #909399;
+}
+
+.achievement-item .delete-btn:hover {
+  color: #f56c6c;
+  transform: scale(1.1);
+}
+
+.add-achievement-btn {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.add-achievement-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.2);
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed #ebeef5;
+}
+
+:deep(.el-collapse-item__header) {
+  font-size: 16px;
+  padding: 12px 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px 4px 0 0;
+}
+
+:deep(.el-collapse-item__content) {
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ebeef5;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  margin-bottom: 15px;
 }
 </style> 

@@ -83,7 +83,14 @@
             </div>
           </div>
           <div class="preview-container">
-            <div class="preview-wrapper" :style="{ transform: `scale(${previewScale})`, transformOrigin: 'top center' }">
+            <div 
+              class="preview-wrapper" 
+              :style="{ 
+                transform: `scale(${previewScale})`, 
+                transformOrigin: 'top center',
+                maxHeight: previewScale < 0.8 ? 'none' : undefined
+              }"
+            >
               <component :is="templateComponent" />
             </div>
           </div>
@@ -132,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useResumeStore } from '../stores/resumeStore';
 import { ElMessage } from 'element-plus';
@@ -179,6 +186,28 @@ const templateInfo = computed(() => resumeStore.templateInfo);
 
 // 预览缩放状态
 const previewScale = ref(0.8);
+
+// 自动适应窗口大小
+const adjustPreviewScale = () => {
+  if (window.innerWidth < 1200) {
+    previewScale.value = 0.6;
+  } else if (window.innerWidth < 1400) {
+    previewScale.value = 0.65;
+  } else if (window.innerWidth < 1600) {
+    previewScale.value = 0.7;
+  } else {
+    previewScale.value = 0.75;
+  }
+};
+
+onMounted(() => {
+  adjustPreviewScale();
+  window.addEventListener('resize', adjustPreviewScale);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', adjustPreviewScale);
+});
 
 // 模板选择对话框状态
 const showTemplateDialog = ref(false);
@@ -354,9 +383,11 @@ const exportPDF = async () => {
 }
 
 .form-section {
-  width: 50%;
+  width: 650px;
+  min-width: 500px;
   padding: 20px;
   overflow-y: auto;
+  flex-shrink: 0; /* 防止表单区域缩小 */
 }
 
 .section-header {
@@ -385,7 +416,29 @@ const exportPDF = async () => {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-  padding: 20px;
+  padding: 25px;
+  max-width: 100%;
+}
+
+/* 添加表单容器内部表单项的样式 */
+.form-container :deep(.el-form-item) {
+  margin-bottom: 20px;
+}
+
+.form-container :deep(.el-form-item__label) {
+  font-weight: 500;
+  padding-bottom: 8px;
+  color: #303133;
+}
+
+.form-container :deep(.el-input__wrapper),
+.form-container :deep(.el-textarea__inner) {
+  box-shadow: 0 0 0 1px #dcdfe6 inset;
+}
+
+.form-container :deep(.el-input__wrapper:hover),
+.form-container :deep(.el-textarea__inner:hover) {
+  box-shadow: 0 0 0 1px #c0c4cc inset;
 }
 
 .preview-section {
@@ -396,6 +449,7 @@ const exportPDF = async () => {
   background-color: #f5f7fa;
   height: 100%;
   overflow: hidden;
+  min-width: 400px; /* 确保预览区域有最小宽度 */
 }
 
 .preview-header {
@@ -457,19 +511,21 @@ const exportPDF = async () => {
   justify-content: center;
   align-items: flex-start;
   padding: 25px 0;
+  overflow-x: hidden; /* 防止水平滚动 */
 }
 
 .preview-wrapper {
-  width: 210mm; /* A4宽度 */
+  width: auto; /* 改为自动宽度 */
+  max-width: 210mm; /* 最大宽度为A4 */
+  height: auto;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transform-origin: top center;
-  transition: transform 0.3s ease;
-  max-height: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1.414; /* A4纸张长宽比 */
+  transition: transform 0.3s ease, max-height 0.3s ease; /* 添加max-height过渡 */
+  aspect-ratio: 1 / 1.414; /* 保持A4纸张长宽比 */
   overflow: hidden;
   border-radius: 2px;
+  margin: 0 auto; /* 居中显示 */
 }
 
 /* 模板选择对话框样式 */
@@ -565,5 +621,57 @@ const exportPDF = async () => {
 
 .action-btn .el-icon {
   font-size: 16px;
+}
+
+/* 媒体查询 - 针对小屏幕优化 */
+@media (max-width: 1600px) {
+  .form-section {
+    width: 600px;
+    min-width: 450px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 1400px) {
+  .form-section {
+    width: 550px;
+    min-width: 400px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .preview-wrapper {
+    max-width: 95%;
+  }
+  
+  .form-section {
+    width: 500px;
+    min-width: 380px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 992px) {
+  .content-area {
+    flex-direction: column;
+  }
+  
+  .form-section {
+    width: 100%;
+    min-width: 100%;
+    max-height: 50vh;
+  }
+  
+  .preview-section {
+    min-width: 100%;
+    flex: 1;
+    border-left: none;
+    border-top: 1px solid #eaedf1;
+  }
+  
+  .preview-wrapper {
+    max-width: 80%;
+  }
 }
 </style> 
