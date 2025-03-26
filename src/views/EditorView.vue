@@ -6,18 +6,21 @@
       </div>
       <div class="header-actions">
         <el-tooltip content="更换模板" placement="bottom" effect="light">
-          <el-button type="primary" plain @click="showTemplateDialog = true">
-            <el-icon><Picture /></el-icon>
+          <el-button type="info" class="action-btn" @click="showTemplateDialog = true">
+            <el-icon><SetUp /></el-icon>
+            <span>模板</span>
           </el-button>
         </el-tooltip>
         <el-tooltip content="预览简历" placement="bottom" effect="light">
-          <el-button type="primary" plain @click="goToPreview">
+          <el-button type="primary" class="action-btn" @click="goToPreview">
             <el-icon><View /></el-icon>
+            <span>预览</span>
           </el-button>
         </el-tooltip>
         <el-tooltip content="导出为PDF" placement="bottom" effect="light">
-          <el-button type="success" plain @click="exportPDF">
-            <el-icon><Download /></el-icon>
+          <el-button type="success" class="action-btn" @click="exportPDF">
+            <el-icon><DocumentAdd /></el-icon>
+            <span>导出</span>
           </el-button>
         </el-tooltip>
       </div>
@@ -98,7 +101,10 @@
       class="template-dialog"
     >
       <div class="template-selector-container">
-        <p class="template-selector-tip">选择适合您的简历风格，让您的简历脱颖而出</p>
+        <div class="template-selector-header">
+          <el-icon class="template-selector-icon"><SetUp /></el-icon>
+          <p class="template-selector-tip">选择适合您的简历风格，让您的简历脱颖而出</p>
+        </div>
         <div class="template-cards">
           <div 
             v-for="(template, id) in templateInfo" 
@@ -131,9 +137,10 @@ import { useRouter } from 'vue-router';
 import { useResumeStore } from '../stores/resumeStore';
 import { ElMessage } from 'element-plus';
 import { 
-  Picture, View, Download, ZoomIn, ZoomOut, 
+  View, Download, ZoomIn, ZoomOut, 
   User, School, OfficeBuilding, Histogram, 
-  Promotion, Medal, RefreshRight 
+  Promotion, Medal, RefreshRight, SetUp,
+  DocumentAdd
 } from '@element-plus/icons-vue';
 
 // 导入模板缩略图样式
@@ -467,21 +474,96 @@ const exportPDF = async () => {
 
 /* 模板选择对话框样式 */
 .template-selector-container {
-  padding: 10px 20px;
+  padding: 0 20px 20px;
+}
+
+.template-selector-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.template-selector-icon {
+  font-size: 24px;
+  color: #409EFF;
+  margin-right: 10px;
 }
 
 .template-selector-tip {
   text-align: center;
-  margin-bottom: 25px;
   color: #606266;
   font-size: 16px;
+  margin: 0;
+}
+
+.template-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.template-card {
+  width: 180px;
+  border: 2px solid #e6e6e6;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.template-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.template-card.active {
+  border-color: #409EFF;
+  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.2);
 }
 
 .template-dialog :deep(.el-dialog__body) {
-  padding-top: 10px;
+  padding-top: 0;
 }
 
-:deep(.el-icon) {
-  font-size: 18px;
+.template-dialog :deep(.el-dialog__title) {
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 顶部按钮样式 */
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  display: flex !important;
+  align-items: center;
+  gap: 5px;
+  border-radius: 6px;
+  transition: all 0.3s;
+  font-weight: 500;
+  height: 36px;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.action-btn span {
+  margin-left: 2px;
+}
+
+.action-btn .el-icon {
+  font-size: 16px;
 }
 </style> 
