@@ -380,6 +380,7 @@ const exportPDF = async () => {
   flex: 1;
   display: flex;
   overflow: hidden;
+  height: 100%;
 }
 
 .form-section {
@@ -388,6 +389,7 @@ const exportPDF = async () => {
   padding: 20px;
   overflow-y: auto;
   flex-shrink: 0; /* 防止表单区域缩小 */
+  height: 100%;
 }
 
 .section-header {
@@ -418,6 +420,8 @@ const exportPDF = async () => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
   padding: 25px;
   max-width: 100%;
+  height: auto;
+  overflow: visible;
 }
 
 /* 添加表单容器内部表单项的样式 */
@@ -439,6 +443,20 @@ const exportPDF = async () => {
 .form-container :deep(.el-input__wrapper:hover),
 .form-container :deep(.el-textarea__inner:hover) {
   box-shadow: 0 0 0 1px #c0c4cc inset;
+}
+
+/* 美化滚动条 */
+.form-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-section::-webkit-scrollbar-thumb {
+  background-color: #c0c4cc;
+  border-radius: 3px;
+}
+
+.form-section::-webkit-scrollbar-track {
+  background-color: #f5f7fa;
 }
 
 .preview-section {
@@ -512,6 +530,7 @@ const exportPDF = async () => {
   align-items: flex-start;
   padding: 25px 0;
   overflow-x: hidden; /* 防止水平滚动 */
+  height: 100%;
 }
 
 .preview-wrapper {
@@ -626,52 +645,123 @@ const exportPDF = async () => {
 /* 媒体查询 - 针对小屏幕优化 */
 @media (max-width: 1600px) {
   .form-section {
-    width: 600px;
-    min-width: 450px;
-    padding: 15px;
-  }
-}
-
-@media (max-width: 1400px) {
-  .form-section {
     width: 550px;
     min-width: 400px;
     padding: 15px;
   }
 }
 
-@media (max-width: 1200px) {
-  .preview-wrapper {
-    max-width: 95%;
-  }
-  
+@media (max-width: 1400px) {
   .form-section {
     width: 500px;
     min-width: 380px;
     padding: 15px;
   }
+  
+  .preview-wrapper {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .form-section {
+    width: 450px;
+    min-width: 350px;
+    padding: 10px;
+  }
+  
+  .form-container {
+    padding: 15px;
+  }
 }
 
 @media (max-width: 992px) {
+  /* 保持editor-container为左右布局 */
+  .editor-container {
+    flex-direction: row;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+  }
+  
+  /* 内容区域改为上下布局 */
   .content-area {
     flex-direction: column;
+    overflow: hidden;
   }
   
   .form-section {
     width: 100%;
+    height: 60%;
+    max-height: 60%;
     min-width: 100%;
-    max-height: 50vh;
+    overflow-y: auto;
   }
   
   .preview-section {
+    height: 40%;
+    min-height: 40%;
+    width: 100%;
     min-width: 100%;
-    flex: 1;
     border-left: none;
     border-top: 1px solid #eaedf1;
   }
   
+  .preview-container {
+    padding: 10px 0;
+  }
+  
   .preview-wrapper {
-    max-width: 80%;
+    max-width: 90%;
+    transform-origin: top center !important;
+  }
+  
+  .form-container {
+    padding: 12px;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 50px;
+  }
+  
+  .sidebar-item {
+    padding: 12px 0;
+  }
+  
+  .sidebar-item .el-icon {
+    font-size: 18px;
+  }
+  
+  .form-section {
+    padding: 8px;
+  }
+  
+  .form-container {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    padding: 0.6rem 1rem;
+  }
+  
+  .logo h1 {
+    font-size: 1.1rem;
+  }
+  
+  .action-btn {
+    padding: 0 8px;
+  }
+  
+  .action-btn span {
+    display: none;
+  }
+  
+  .sidebar {
+    width: 45px;
   }
 }
 </style> 
