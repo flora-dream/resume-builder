@@ -25,14 +25,28 @@
 
     <div class="editor-container">
       <div class="sidebar">
-        <div class="sidebar-item" 
-          v-for="tab in tabs" 
-          :key="tab.name"
-          :class="{ active: activeTab === tab.name }"
-          @click="activeTab = tab.name"
-        >
-          <el-icon><component :is="tab.icon"></component></el-icon>
-          <span>{{ tab.label }}</span>
+        <div class="sidebar-header">编辑模块</div>
+        <div class="sidebar-items">
+          <el-tooltip
+            v-for="tab in tabs" 
+            :key="tab.name"
+            :content="tab.label"
+            placement="right"
+            effect="light"
+          >
+            <div 
+              class="sidebar-item" 
+              :class="{ active: activeTab === tab.name }"
+              @click="activeTab = tab.name"
+            >
+              <el-icon>
+                <component :is="tab.icon" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </div>
+        <div class="sidebar-help">
+          友情提示：请根据模板选择合适的简历风格，让您的简历脱颖而出
         </div>
       </div>
 
@@ -144,12 +158,12 @@ const resumeStore = useResumeStore();
 
 // 定义标签页配置
 const tabs = [
-  { name: 'personalInfo', label: '个人信息', component: PersonalInfoForm, icon: 'User' },
-  { name: 'education', label: '教育经历', component: EducationForm, icon: 'School' },
-  { name: 'workExperience', label: '工作经验', component: WorkExperienceForm, icon: 'OfficeBuilding' },
-  { name: 'skills', label: '技能', component: SkillsForm, icon: 'Histogram' },
-  { name: 'projects', label: '项目经验', component: ProjectsForm, icon: 'Promotion' },
-  { name: 'certifications', label: '证书', component: CertificationsForm, icon: 'Medal' }
+  { name: 'personalInfo', label: '个人信息', component: PersonalInfoForm, icon: User },
+  { name: 'education', label: '教育经历', component: EducationForm, icon: School },
+  { name: 'workExperience', label: '工作经验', component: WorkExperienceForm, icon: OfficeBuilding },
+  { name: 'skills', label: '技能', component: SkillsForm, icon: Histogram },
+  { name: 'projects', label: '项目经验', component: ProjectsForm, icon: Promotion },
+  { name: 'certifications', label: '证书', component: CertificationsForm, icon: Medal }
 ];
 
 const activeTab = ref('personalInfo');
@@ -251,39 +265,79 @@ const exportPDF = async () => {
 }
 
 .sidebar {
-  width: 80px;
+  width: 60px;
   background-color: #fff;
   border-right: 1px solid #ebeef5;
   display: flex;
   flex-direction: column;
-  padding-top: 20px;
+  padding: 20px 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+  position: relative;
+}
+
+.sidebar-header {
+  text-align: center;
+  font-size: 10px;
+  color: #909399;
+  font-weight: 500;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #ebeef5;
+  width: 100%;
+}
+
+.sidebar-items {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .sidebar-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 15px 0;
   cursor: pointer;
-  transition: all 0.3s;
-  color: #606266;
+  transition: all 0.2s;
+  position: relative;
+  margin-bottom: 5px;
+  border-left: 3px solid transparent;
+  width: 100%;
 }
 
-.sidebar-item span {
-  font-size: 12px;
-  margin-top: 5px;
+.sidebar-item:hover {
+  background-color: #f0f7ff;
 }
 
 .sidebar-item.active {
-  color: #409EFF;
   background-color: #ecf5ff;
-  border-right: 3px solid #409EFF;
+  border-left: 3px solid #409EFF;
 }
 
-.sidebar-item:hover:not(.active) {
-  background-color: #f5f7fa;
+.sidebar-item .el-icon {
+  font-size: 22px;
+  transition: all 0.2s;
+  color: #606266;
+}
+
+.sidebar-item:hover .el-icon {
   color: #409EFF;
+}
+
+.sidebar-item.active .el-icon {
+  transform: scale(1.1);
+  color: #409EFF;
+}
+
+.sidebar-help {
+  margin-top: auto;
+  padding: 10px 5px;
+  text-align: center;
+  font-size: 10px;
+  color: #909399;
+  border-top: 1px dashed #ebeef5;
+  line-height: 1.4;
 }
 
 .content-area {
@@ -331,8 +385,8 @@ const exportPDF = async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #e6e6e6;
-  background-color: #f0f2f5;
+  border-left: 1px solid #eaedf1;
+  background-color: #f5f7fa;
   height: 100%;
   overflow: hidden;
 }
@@ -341,51 +395,74 @@ const exportPDF = async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 12px 20px;
   border-bottom: 1px solid #ebeef5;
   background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .preview-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 14px;
   font-weight: 500;
   color: #303133;
+  display: flex;
+  align-items: center;
+}
+
+.preview-header h3::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background-color: #409EFF;
+  margin-right: 8px;
+  border-radius: 1px;
 }
 
 .preview-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  background-color: #f5f7fa;
+  padding: 3px 6px;
+  border-radius: 4px;
 }
 
 .scale-text {
-  font-size: 14px;
+  font-size: 12px;
   color: #606266;
-  width: 45px;
+  width: 36px;
   text-align: center;
+  font-weight: 500;
+}
+
+.preview-controls :deep(.el-button) {
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .preview-container {
   flex: 1;
   overflow: auto;
-  background-color: #e9ecef;
+  background-color: #ebeef5;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 20px;
+  padding: 25px 0;
 }
 
 .preview-wrapper {
   width: 210mm; /* A4宽度 */
   background-color: white;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transform-origin: top center;
   transition: transform 0.3s ease;
   max-height: 100%;
   height: auto;
   aspect-ratio: 1 / 1.414; /* A4纸张长宽比 */
   overflow: hidden;
+  border-radius: 2px;
 }
 
 /* 模板选择对话框样式 */

@@ -158,6 +158,12 @@ export const useResumeStore = defineStore('resume', {
     updateProjects(projects) {
       this.resumeData.projects = projects;
       this.saveToLocalStorage();
+    },
+    
+    // 更新证书信息
+    updateCertifications(certifications) {
+      this.resumeData.certifications = certifications;
+      this.saveToLocalStorage();
     }
   },
   

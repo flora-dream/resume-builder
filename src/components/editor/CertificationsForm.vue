@@ -75,7 +75,11 @@ const removeCertification = (index) => {
 
 // 监听证书变化
 watch(certificationsList, (newValue) => {
-  resumeStore.updateCertifications([...newValue]);
+  try {
+    resumeStore.updateCertifications([...newValue]);
+  } catch (error) {
+    console.error('更新证书数据失败:', error);
+  }
 }, { deep: true });
 
 // 组件挂载时初始化数据
