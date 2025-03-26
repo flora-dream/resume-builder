@@ -76,7 +76,7 @@
                 </el-button>
               </el-tooltip>
               <el-tooltip content="恢复默认大小" placement="top">
-                <el-button @click="previewScale = 0.8" circle size="small">
+                <el-button @click="previewScale = 1.0" circle size="small">
                   <el-icon><RefreshRight /></el-icon>
                 </el-button>
               </el-tooltip>
@@ -88,7 +88,7 @@
               :style="{ 
                 transform: `scale(${previewScale})`, 
                 transformOrigin: 'top center',
-                maxHeight: previewScale < 0.8 ? 'none' : undefined
+                maxHeight: previewScale < 1.0 ? 'none' : undefined
               }"
             >
               <component :is="templateComponent" />
@@ -185,19 +185,12 @@ const selectedTemplate = ref(resumeStore.selectedTemplate);
 const templateInfo = computed(() => resumeStore.templateInfo);
 
 // 预览缩放状态
-const previewScale = ref(0.8);
+const previewScale = ref(1.0);
 
 // 自动适应窗口大小
 const adjustPreviewScale = () => {
-  if (window.innerWidth < 1200) {
-    previewScale.value = 0.6;
-  } else if (window.innerWidth < 1400) {
-    previewScale.value = 0.65;
-  } else if (window.innerWidth < 1600) {
-    previewScale.value = 0.7;
-  } else {
-    previewScale.value = 0.75;
-  }
+  // 在所有屏幕尺寸下都保持100%的预览比例
+  previewScale.value = 1.0;
 };
 
 onMounted(() => {
@@ -707,12 +700,14 @@ const exportPDF = async () => {
   }
   
   .preview-container {
-    padding: 10px 0;
+    padding: 8px 0;
+    overflow: auto;
   }
   
   .preview-wrapper {
-    max-width: 90%;
+    max-width: 80%;
     transform-origin: top center !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
   
   .form-container {
