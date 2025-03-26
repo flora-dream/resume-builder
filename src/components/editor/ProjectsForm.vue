@@ -304,7 +304,11 @@ const removeOutcome = (index, outcomeIndex) => {
 
 // 更新项目数据到store
 const updateProjects = () => {
-  resumeStore.updateProjects(JSON.parse(JSON.stringify(projectsList)));
+  try {
+    resumeStore.updateProjects(JSON.parse(JSON.stringify(projectsList)));
+  } catch (error) {
+    console.error('更新项目数据失败:', error);
+  }
 };
 
 // 组件挂载时初始化数据

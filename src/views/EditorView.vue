@@ -38,11 +38,6 @@
 
       <div class="content-area">
         <div class="form-section">
-          <div class="section-header">
-            <h2>{{ activeTabComponent.label }}</h2>
-            <div v-if="activeTab === 'personalInfo'" class="info-badge">基本信息</div>
-          </div>
-          
           <div class="form-container">
             <component :is="activeTabComponent.component" />
           </div>

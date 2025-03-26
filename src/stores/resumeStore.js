@@ -152,6 +152,12 @@ export const useResumeStore = defineStore('resume', {
     // 获取模板详细信息
     getTemplateInfo(templateId) {
       return this.templateInfo[templateId] || this.templateInfo.classic;
+    },
+    
+    // 更新项目经验
+    updateProjects(projects) {
+      this.resumeData.projects = projects;
+      this.saveToLocalStorage();
     }
   },
   
