@@ -80,7 +80,7 @@
               </div>
               
               <div v-if="project.technologies && project.technologies.length > 0" class="project-technologies">
-                <span class="tech-label">技术栈：</span>
+                <span class="tech-label">关键技术：</span>
                 <div class="tech-tags">
                   <span v-for="(tech, techIndex) in project.technologies" :key="techIndex" class="tech-tag">
                     {{ tech }}
@@ -185,9 +185,24 @@ const resumeData = computed(() => resumeStore.resumeData);
 const themeOptions = computed(() => resumeStore.themeOptions);
 
 const computedStyles = computed(() => {
+  const primaryColor = themeOptions.value.primaryColor || '#3a7bd5';
+  const secondaryColor = themeOptions.value.secondaryColor || '#00d2ff';
+  
+  // 将颜色转换为RGB格式
+  const hexToRgb = (hex) => {
+    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    const fullHex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(fullHex);
+    return result ? 
+      `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : 
+      '58, 123, 213';
+  };
+  
   return {
-    '--primary-color': themeOptions.value.primaryColor || '#3a7bd5',
-    '--secondary-color': themeOptions.value.secondaryColor || '#00d2ff',
+    '--primary-color': primaryColor,
+    '--primary-color-rgb': hexToRgb(primaryColor),
+    '--secondary-color': secondaryColor,
+    '--secondary-color-rgb': hexToRgb(secondaryColor),
     '--background-color': themeOptions.value.backgroundColor || '#ffffff',
     '--text-color': themeOptions.value.textColor || '#333333',
     '--accent-color': '#f0f0f0',
@@ -326,18 +341,41 @@ const computedStyles = computed(() => {
 
 .resume-section {
   margin-bottom: 18px;
+  position: relative;
 }
 
 .section-title {
   font-family: var(--heading-font, 'Roboto', Arial, sans-serif);
-  font-size: 16px;
+  font-size: 18px;
   color: var(--primary-color, #3a7bd5);
   margin-top: 0;
   margin-bottom: 15px;
   padding-bottom: 8px;
-  border-bottom: 2px solid var(--secondary-color, #00d2ff);
+  position: relative;
+  display: inline-block;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--secondary-color, #00d2ff);
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color, #3a7bd5);
+  opacity: 0.3;
 }
 
 /* 工作经验样式 */
@@ -383,6 +421,25 @@ const computedStyles = computed(() => {
   font-weight: 600;
   color: var(--primary-color, #3a7bd5);
   line-height: 1.3;
+  position: relative;
+  display: inline-block;
+}
+
+.experience-company::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  background-color: var(--secondary-color, #00d2ff);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.experience-item:hover .experience-company::after {
+  transform: scaleX(1);
 }
 
 .experience-position {
@@ -455,6 +512,25 @@ const computedStyles = computed(() => {
   font-size: 16px;
   font-weight: 600;
   color: var(--primary-color, #3a7bd5);
+  position: relative;
+  display: inline-block;
+}
+
+.project-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  background-color: var(--secondary-color, #00d2ff);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.project-item:hover .project-title::after {
+  transform: scaleX(1);
 }
 
 .project-date {
@@ -516,6 +592,25 @@ const computedStyles = computed(() => {
   font-size: 14px;
   font-weight: 600;
   color: #333;
+  position: relative;
+  display: inline-block;
+}
+
+.skill-name::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  transform: scaleX(0);
+  background-color: var(--secondary-color, #00d2ff);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.skill-item:hover .skill-name::after {
+  transform: scaleX(0.8);
 }
 
 .skill-level-badge {
@@ -605,6 +700,25 @@ const computedStyles = computed(() => {
   font-weight: 600;
   color: var(--primary-color, #3a7bd5);
   margin: 0;
+  position: relative;
+  display: inline-block;
+}
+
+.education-school::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  background-color: var(--secondary-color, #00d2ff);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.education-item:hover .education-school::after {
+  transform: scaleX(1);
 }
 
 .education-period {
@@ -656,11 +770,30 @@ const computedStyles = computed(() => {
   border-left: 3px solid var(--primary-color, #3a7bd5);
 }
 
+.certification-item:hover .certification-name::after {
+  transform: scaleX(0.8);
+}
+
 .certification-name {
   margin: 0 0 3px;
   font-size: 14px;
   font-weight: 600;
   color: #333;
+  position: relative;
+  display: inline-block;
+}
+
+.certification-name::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  transform: scaleX(0);
+  background-color: var(--secondary-color, #00d2ff);
+  transition: transform 0.3s;
+  transform-origin: left;
 }
 
 .certification-issuer {
@@ -738,6 +871,33 @@ const computedStyles = computed(() => {
   .experience-period {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  
+  /* 打印时显示hover的下划线效果 */
+  .experience-company::after,
+  .project-title::after,
+  .education-school::after,
+  .skill-name::after,
+  .certification-name::after {
+    transform: scaleX(0.7) !important;
+  }
+  
+  /* 确保section-title渐变在打印时可见 */
+  .section-title {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .section-title::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .section-title::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    opacity: 0.3 !important;
+    width: 100% !important; /* 在打印时调整长横线宽度 */
   }
 }
 

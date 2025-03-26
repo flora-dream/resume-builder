@@ -72,6 +72,14 @@
               </div>
             </div>
             <p v-if="project.description" class="project-description">{{ project.description }}</p>
+            <div v-if="project.technologies && project.technologies.length > 0" class="project-technologies">
+              <span class="tech-label">关键技术：</span>
+              <div class="tech-tags">
+                <span v-for="(tech, techIndex) in project.technologies" :key="techIndex" class="tech-tag">
+                  {{ tech }}
+                </span>
+              </div>
+            </div>
             <ul v-if="project.highlights && project.highlights.length > 0" class="highlights-list">
               <li v-for="(highlight, i) in project.highlights" :key="i">{{ highlight }}</li>
             </ul>
@@ -139,14 +147,29 @@ const resumeData = computed(() => resumeStore.resumeData);
 const themeOptions = computed(() => resumeStore.themeOptions);
 
 const computedStyles = computed(() => {
+  const primaryColor = themeOptions.value.primaryColor || '#2c3e50';
+  const secondaryColor = themeOptions.value.secondaryColor || '#3498db';
+  
+  // 将颜色转换为RGB格式
+  const hexToRgb = (hex) => {
+    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    const fullHex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(fullHex);
+    return result ? 
+      `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : 
+      '44, 62, 80';
+  };
+  
   return {
-    '--primary-color': themeOptions.value.primaryColor,
-    '--secondary-color': themeOptions.value.secondaryColor,
-    '--background-color': themeOptions.value.backgroundColor,
-    '--text-color': themeOptions.value.textColor,
-    '--heading-font': themeOptions.value.headingFont,
-    '--body-font': themeOptions.value.bodyFont,
-    '--font-size': themeOptions.value.fontSize,
+    '--primary-color': primaryColor,
+    '--primary-color-rgb': hexToRgb(primaryColor),
+    '--secondary-color': secondaryColor,
+    '--secondary-color-rgb': hexToRgb(secondaryColor),
+    '--background-color': themeOptions.value.backgroundColor || '#ffffff',
+    '--text-color': themeOptions.value.textColor || '#333333',
+    '--heading-font': themeOptions.value.headingFont || 'Arial, sans-serif',
+    '--body-font': themeOptions.value.bodyFont || 'Arial, sans-serif',
+    '--font-size': themeOptions.value.fontSize || '14px',
   };
 });
 </script>
@@ -204,9 +227,39 @@ const computedStyles = computed(() => {
 .section-title {
   color: var(--primary-color, #2c3e50);
   font-family: var(--heading-font, Arial, sans-serif);
-  border-bottom: 1px solid var(--secondary-color, #3498db);
-  padding-bottom: 5px;
+  font-size: 20px;
   margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--secondary-color, #3498db);
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color, #2c3e50);
+  opacity: 0.3;
+}
+
+/* 确保每个Section的父容器相对定位 */
+.summary-section, .work-section, .projects-section, .education-section, .skills-section, .certifications-section {
+  position: relative;
+  overflow: hidden;
 }
 
 .summary-section {
@@ -240,6 +293,28 @@ const computedStyles = computed(() => {
   color: var(--primary-color, #2c3e50);
   margin: 0;
   font-size: 18px;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+}
+
+.work-title-company h3::after, .education-degree-school h3::after, .project-title h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  background-color: var(--secondary-color, #3498db);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.work-item:hover .work-title-company h3::after, 
+.education-item:hover .education-degree-school h3::after, 
+.project-item:hover .project-title h3::after {
+  transform: scaleX(0.7);
 }
 
 .work-title-company h4, .education-degree-school h4 {
@@ -247,6 +322,8 @@ const computedStyles = computed(() => {
   margin: 5px 0 0 0;
   font-size: 16px;
   font-weight: normal;
+  position: relative;
+  display: inline-block;
 }
 
 .work-date, .education-date, .project-date {
@@ -261,6 +338,33 @@ const computedStyles = computed(() => {
 
 .achievements-list li, .highlights-list li {
   margin-bottom: 3px;
+}
+
+.project-technologies {
+  margin: 8px 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.tech-label {
+  font-weight: bold;
+  color: var(--primary-color, #2c3e50);
+  margin-right: 5px;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tech-tag {
+  font-size: 12px;
+  background-color: #f0f0f0;
+  color: var(--secondary-color, #3498db);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
 }
 
 .skill-item {
@@ -294,6 +398,26 @@ const computedStyles = computed(() => {
   margin: 0;
   font-size: 16px;
   color: var(--primary-color, #2c3e50);
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+}
+
+.certification-header h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  background-color: var(--secondary-color, #3498db);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.certification-item:hover .certification-header h3::after {
+  transform: scaleX(0.7);
 }
 
 .certification-issuer-date {
@@ -311,5 +435,45 @@ const computedStyles = computed(() => {
 
 .certification-link:hover {
   text-decoration: underline;
+}
+
+/* 打印样式 */
+@media print {
+  .section-title::before,
+  .work-title-company h3::after,
+  .education-degree-school h3::after,
+  .project-title h3::after,
+  .certification-header h3::after {
+    transform: scaleX(0.7) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .section-title {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .section-title::before {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .section-title::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    opacity: 0.3 !important;
+    width: 100% !important;
+  }
+  
+  .skill-level-bar {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
 </style> 

@@ -106,6 +106,7 @@
                     filterable
                     allow-create
                     default-first-option
+                    :reserve-keyword="false"
                     placeholder="添加关键技术和工具"
                     style="width: 100%"
                     @change="updateProjects"
@@ -209,7 +210,7 @@
 <script setup>
 import { ref, reactive, watch, onMounted, nextTick } from 'vue';
 import { useResumeStore } from '../../stores/resumeStore';
-import { Delete, Plus, Star, Trophy, Link, CopyDocument, Calendar } from '@element-plus/icons-vue';
+import { Delete, Plus, Star, Trophy, Link, CopyDocument, Calendar, Monitor } from '@element-plus/icons-vue';
 
 const resumeStore = useResumeStore();
 
