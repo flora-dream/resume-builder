@@ -151,7 +151,18 @@ export const useResumeStore = defineStore('resume', {
     
     // 获取模板详细信息
     getTemplateInfo(templateId) {
-      return this.templateInfo[templateId] || this.templateInfo.classic;
+      if (!templateId) {
+        console.warn('getTemplateInfo: 无效的模板ID');
+        return this.templateInfo.classic; // 返回默认模板
+      }
+      
+      // 检查请求的模板是否存在，不存在则返回默认模板
+      if (!this.templateInfo[templateId]) {
+        console.warn(`getTemplateInfo: 模板 ${templateId} 不存在，返回默认模板`);
+        return this.templateInfo.classic;
+      }
+      
+      return this.templateInfo[templateId];
     },
     
     // 更新项目经验

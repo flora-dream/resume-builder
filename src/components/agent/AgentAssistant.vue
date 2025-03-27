@@ -31,9 +31,7 @@
             <h3>AI简历助手可以帮助你：</h3>
             <ul>
               <li>分析简历完整度和质量</li>
-              <li>根据目标职位匹配度评估</li>
               <li>生成针对性的内容建议</li>
-              <li>智能推荐最适合的简历模板</li>
               <li>自动优化简历内容</li>
             </ul>
           </div>
@@ -47,26 +45,6 @@
             >
               <el-icon><DataAnalysis /></el-icon>
               简历分析
-            </el-button>
-            
-            <el-button 
-              type="primary" 
-              plain 
-              @click="showJobMatchSection"
-              :disabled="isLoading"
-            >
-              <el-icon><Link /></el-icon>
-              职位匹配度
-            </el-button>
-            
-            <el-button 
-              type="primary" 
-              plain 
-              @click="showTemplateRecommendation"
-              :disabled="isLoading"
-            >
-              <el-icon><Star /></el-icon>
-              模板推荐
             </el-button>
             
             <el-button 
@@ -94,6 +72,7 @@
                 type="circle" 
                 :percentage="currentAnalysis.completeness.percentage" 
                 :status="getCompletenessStatus(currentAnalysis.completeness.percentage)"
+                :format="(percentage) => `${percentage}%`"
               />
               <span>简历完整度</span>
             </div>
@@ -138,97 +117,6 @@
           </div>
         </div>
         
-        <!-- 职位匹配度分析 -->
-        <div v-else-if="currentSection === 'job-match'" class="agent-section job-match-section">
-          <div class="section-header">
-            <h3>职位匹配度分析</h3>
-            <el-button size="small" text @click="backToMain">返回</el-button>
-          </div>
-          
-          <div class="section-content">
-            <el-form v-if="!jobMatchResult" @submit.prevent="analyzeJobMatch">
-              <el-form-item label="职位描述">
-                <el-input 
-                  v-model="jobDescription" 
-                  type="textarea" 
-                  :rows="5" 
-                  placeholder="请粘贴目标职位的描述..."
-                ></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="analyzeJobMatch" :disabled="!jobDescription.trim()">
-                  分析匹配度
-                </el-button>
-              </el-form-item>
-            </el-form>
-            
-            <div v-else class="match-result">
-              <div class="match-score">
-                <el-progress 
-                  type="dashboard" 
-                  :percentage="jobMatchResult.match" 
-                  :color="getMatchColor(jobMatchResult.match)"
-                />
-                <span>匹配度</span>
-              </div>
-              
-              <div class="match-suggestions">
-                <h4>如何提高与职位的匹配度:</h4>
-                <ul>
-                  <li v-for="(suggestion, index) in jobMatchResult.suggestions" :key="index">
-                    {{ suggestion }}
-                  </li>
-                </ul>
-                
-                <div class="match-actions">
-                  <el-button type="primary" @click="jobMatchResult = null">重新分析</el-button>
-                  <el-button @click="optimizeForJob">针对此职位优化简历</el-button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 模板推荐 -->
-        <div v-else-if="currentSection === 'template-recommendation'" class="agent-section template-section">
-          <div class="section-header">
-            <h3>模板推荐</h3>
-            <el-button size="small" text @click="backToMain">返回</el-button>
-          </div>
-          
-          <div v-if="templateRecommendation" class="section-content">
-            <div class="recommendation-main">
-              <h4>推荐模板: {{ getTemplateName(templateRecommendation.recommended) }}</h4>
-              <p class="recommendation-reason">{{ templateRecommendation.reason }}</p>
-              
-              <el-button 
-                type="primary" 
-                @click="applyRecommendedTemplate(templateRecommendation.recommended)"
-              >
-                应用此模板
-              </el-button>
-            </div>
-            
-            <div class="alternative-templates">
-              <h4>其他可选模板:</h4>
-              <div class="template-options">
-                <div 
-                  v-for="template in templateRecommendation.alternatives" 
-                  :key="template"
-                  class="template-option"
-                  @click="applyRecommendedTemplate(template)"
-                >
-                  <div class="template-preview">
-                    <img :src="`/templates/${template}-thumb.png`" :alt="template" 
-                      onerror="this.src='/templates/default-thumb.png'">
-                  </div>
-                  <span>{{ getTemplateName(template) }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
         <!-- 简历优化 -->
         <div v-else-if="currentSection === 'optimization'" class="agent-section optimization-section">
           <div class="section-header">
@@ -238,42 +126,104 @@
           
           <div class="section-content">
             <template v-if="!optimizationResult">
-              <el-form @submit.prevent="startOptimization">
+              <div class="optimization-intro">
+                <h4>智能优化说明</h4>
+                <ul>
+                  <li>根据目标职位智能调整简历内容</li>
+                  <li>优化关键词匹配度</li>
+                  <li>突出相关工作经验</li>
+                  <li>调整技能描述的专业性</li>
+                </ul>
+              </div>
+              
+              <el-form @submit.prevent="startOptimization" class="optimization-form">
                 <el-form-item label="目标职位">
                   <el-input 
                     v-model="targetJob.title" 
-                    placeholder="例如: 前端开发工程师"
+                    placeholder="请输入目标职位，例如：前端开发工程师"
+                    clearable
                   ></el-input>
                 </el-form-item>
-                <el-form-item label="关键技能" optional>
+                
+                <el-form-item label="职位类型">
+                  <el-select v-model="targetJob.type" placeholder="请选择职位类型" clearable>
+                    <el-option label="技术类" value="technical" />
+                    <el-option label="管理类" value="management" />
+                    <el-option label="设计类" value="design" />
+                    <el-option label="市场类" value="marketing" />
+                    <el-option label="销售类" value="sales" />
+                    <el-option label="其他" value="other" />
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="职位关键词">
                   <el-select
                     v-model="targetJob.keywords"
                     multiple
                     filterable
                     allow-create
                     default-first-option
-                    placeholder="添加与职位相关的关键技能"
+                    placeholder="选择或输入与职位相关的关键词"
+                    class="keywords-select"
                   >
-                    <el-option
-                      v-for="item in commonKeywords"
-                      :key="item"
-                      :label="item"
-                      :value="item"
-                    />
+                    <el-option-group label="专业技能">
+                      <el-option
+                        v-for="item in professionalKeywords"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-option-group>
+                    <el-option-group label="软技能">
+                      <el-option
+                        v-for="item in softSkillKeywords"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-option-group>
+                    <el-option-group label="管理能力">
+                      <el-option
+                        v-for="item in managementKeywords"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-option-group>
                   </el-select>
+                  <div class="keywords-tip">建议选择3-5个关键词，优先选择与目标职位最相关的</div>
                 </el-form-item>
+                
+                <el-form-item label="优化重点">
+                  <el-checkbox-group v-model="targetJob.focus">
+                    <el-checkbox label="experience">工作经验</el-checkbox>
+                    <el-checkbox label="skills">技能描述</el-checkbox>
+                    <el-checkbox label="education">教育背景</el-checkbox>
+                    <el-checkbox label="projects">项目经历</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+                
                 <el-form-item>
-                  <el-button type="primary" @click="startOptimization" :disabled="!targetJob.title.trim()">
-                    优化简历
+                  <el-button 
+                    type="primary" 
+                    @click="startOptimization" 
+                    :disabled="!targetJob.title.trim()"
+                    :loading="isLoading"
+                  >
+                    开始优化
                   </el-button>
                 </el-form-item>
               </el-form>
             </template>
             
             <div v-else class="optimization-result">
-              <h4>简历优化完成</h4>
+              <div class="result-header">
+                <h4>优化完成</h4>
+                <p class="result-subtitle">AI已根据您的目标职位优化了简历内容</p>
+              </div>
+              
               <div class="changes-list">
-                <h5>改进:</h5>
+                <h5>主要改进:</h5>
                 <ul>
                   <li v-for="(change, index) in optimizationResult.changes" :key="index">
                     {{ change }}
@@ -282,7 +232,9 @@
               </div>
               
               <div class="optimization-actions">
-                <el-button type="primary" @click="applyOptimization">应用优化结果</el-button>
+                <el-button type="primary" @click="applyOptimization" :loading="isLoading">
+                  应用优化结果
+                </el-button>
                 <el-button @click="optimizationResult = null">重新优化</el-button>
               </div>
             </div>
@@ -303,8 +255,6 @@ import {
   Loading, 
   Warning, 
   DataAnalysis,
-  Link, 
-  Star, 
   MagicStick 
 } from '@element-plus/icons-vue';
 
@@ -315,8 +265,6 @@ export default {
     Loading,
     Warning,
     DataAnalysis,
-    Link,
-    Star,
     MagicStick
   },
   setup() {
@@ -327,19 +275,35 @@ export default {
     agentStore.loadSessionFromStorage();
     
     const currentSection = ref(null);
-    const jobDescription = ref('');
     const targetJob = reactive({
       title: '',
-      keywords: []
+      type: '',
+      keywords: [],
+      focus: ['experience', 'skills']
     });
     
-    // 常用关键词
-    const commonKeywords = ref([
-      'JavaScript', 'Vue.js', 'React', 'Angular', 'Node.js', 
-      'HTML', 'CSS', 'Python', 'Java', 'C++',
-      '项目管理', '团队管理', '沟通能力', '领导力',
-      'UI设计', 'UX设计', '产品设计', '平面设计',
-      '数据分析', '机器学习', '人工智能'
+    // 专业技能关键词
+    const professionalKeywords = ref([
+      '项目管理', '产品设计', 'UI设计', 'UX设计', '数据分析',
+      '市场营销', '品牌策划', '内容运营', '客户服务', '销售管理',
+      '财务分析', '人力资源', '法律咨询', '教育培训', '医疗护理',
+      '研发创新', '质量控制', '供应链管理', '物流管理', '采购管理'
+    ]);
+    
+    // 软技能关键词
+    const softSkillKeywords = ref([
+      '沟通能力', '团队协作', '问题解决', '学习能力',
+      '创新思维', '时间管理', '项目管理', '领导力',
+      '客户服务', '商业意识', '跨文化沟通', '压力管理',
+      '决策能力', '执行力', '责任心', '主动性'
+    ]);
+    
+    // 管理能力关键词
+    const managementKeywords = ref([
+      '团队管理', '项目管理', '资源规划', '风险管理',
+      '战略规划', '预算管理', '绩效管理', '变革管理',
+      '决策能力', '冲突解决', '人才发展', '组织建设',
+      '目标管理', '流程优化', '成本控制', '质量管理'
     ]);
     
     // 计算属性
@@ -347,8 +311,6 @@ export default {
     const isLoading = computed(() => agentStore.isLoading);
     const error = computed(() => agentStore.error);
     const currentAnalysis = computed(() => agentStore.currentAnalysis);
-    const jobMatchResult = computed(() => agentStore.jobMatchResult);
-    const templateRecommendation = computed(() => agentStore.templateRecommendation);
     const optimizationResult = computed(() => agentStore.optimizationResult);
     
     // 方法
@@ -360,9 +322,7 @@ export default {
     const getTaskName = () => {
       const taskNames = {
         'resume-analysis': '分析简历',
-        'job-match': '分析职位匹配度',
         'content-suggestions': '生成内容建议',
-        'template-recommendation': '推荐模板',
         'resume-optimization': '优化简历'
       };
       
@@ -383,32 +343,6 @@ export default {
       await agentStore.analyzeResume(resumeData);
     };
     
-    const showJobMatchSection = () => {
-      currentSection.value = 'job-match';
-      // 重置职位匹配结果，允许用户输入新的职位描述
-      agentStore.jobMatchResult = null;
-      jobDescription.value = '';
-    };
-    
-    const analyzeJobMatch = async () => {
-      if (!jobDescription.value.trim()) return;
-      
-      const resumeData = resumeStore.resumeData;
-      await agentStore.generateJobMatch(resumeData, jobDescription.value);
-    };
-    
-    const showTemplateRecommendation = async () => {
-      currentSection.value = 'template-recommendation';
-      const resumeData = resumeStore.resumeData;
-      await agentStore.getTemplateRecommendation(resumeData);
-    };
-    
-    const applyRecommendedTemplate = (template) => {
-      resumeStore.selectTemplate(template);
-      // 提示用户模板已应用
-      ElMessage.success(`已应用${getTemplateName(template)}模板`);
-    };
-    
     const showOptimizationSection = () => {
       currentSection.value = 'optimization';
       // 重置优化结果，允许用户输入新的目标职位
@@ -425,45 +359,25 @@ export default {
     };
     
     const applyOptimization = () => {
-      if (!optimizationResult.value) return;
-      
-      // 应用优化后的简历数据
-      resumeStore.resumeData = optimizationResult.value.optimized;
-      resumeStore.saveToLocalStorage();
-      
-      // 提示用户优化已应用
-      ElMessage.success('简历优化已应用');
-    };
-    
-    const optimizeForJob = () => {
-      showOptimizationSection();
-      // 从职位描述中提取职位名称
-      const lines = jobDescription.value.split('\n');
-      if (lines.length > 0) {
-        targetJob.title = lines[0].substring(0, 30); // 使用描述的第一行作为职位名称
-      }
-      
-      // 从职位匹配结果中提取关键词
-      if (jobMatchResult.value && jobMatchResult.value.suggestions) {
-        const keywordSuggestion = jobMatchResult.value.suggestions.find(
-          suggestion => suggestion.includes('关键词')
-        );
+      try {
+        if (!optimizationResult.value) return;
         
-        if (keywordSuggestion) {
-          const keywordMatch = keywordSuggestion.match(/关键词: ([^.]+)/);
-          if (keywordMatch && keywordMatch[1]) {
-            targetJob.keywords = keywordMatch[1]
-              .split(',')
-              .map(k => k.trim())
-              .filter(k => k);
-          }
-        }
+        // 应用优化后的简历数据
+        resumeStore.resumeData = optimizationResult.value.optimized;
+        resumeStore.saveToLocalStorage();
+        
+        // 提示用户优化已应用
+        ElMessage({
+          message: '简历优化已应用',
+          type: 'success'
+        });
+      } catch (error) {
+        console.error('应用优化失败:', error);
+        ElMessage({
+          message: '应用优化失败，请重试',
+          type: 'error'
+        });
       }
-    };
-    
-    const getTemplateName = (templateId) => {
-      const templateInfo = resumeStore.getTemplateInfo(templateId);
-      return templateInfo ? templateInfo.name : templateId;
     };
     
     const getCompletenessStatus = (percentage) => {
@@ -472,41 +386,27 @@ export default {
       return 'exception';
     };
     
-    const getMatchColor = (score) => {
-      if (score >= 75) return '#67c23a';
-      if (score >= 60) return '#e6a23c';
-      return '#f56c6c';
-    };
-    
     return {
       isActive,
       isLoading,
       error,
       currentSection,
       currentAnalysis,
-      jobMatchResult,
-      templateRecommendation,
       optimizationResult,
-      jobDescription,
       targetJob,
-      commonKeywords,
+      professionalKeywords,
+      softSkillKeywords,
+      managementKeywords,
       
       toggleAgent,
       getTaskName,
       clearError,
       backToMain,
       startAnalysis,
-      showJobMatchSection,
-      analyzeJobMatch,
-      showTemplateRecommendation,
-      applyRecommendedTemplate,
       showOptimizationSection,
       startOptimization,
       applyOptimization,
-      optimizeForJob,
-      getTemplateName,
-      getCompletenessStatus,
-      getMatchColor
+      getCompletenessStatus
     };
   }
 };
@@ -604,8 +504,8 @@ export default {
   gap: 8px;
 }
 
-.feature-buttons .el-button {
-  justify-content: flex-start;
+.feature-buttons .el-icon {
+  margin-right: 8px;
 }
 
 .section-header {
@@ -657,132 +557,109 @@ export default {
   justify-content: center;
 }
 
-.job-match-section .el-form {
-  margin-bottom: 16px;
-}
-
-.match-score {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.optimization-intro {
   margin-bottom: 20px;
+  padding: 16px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
 }
 
-.match-score span {
-  margin-top: 8px;
+.optimization-intro h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.optimization-intro ul {
+  margin: 0;
+  padding-left: 20px;
   color: #606266;
 }
 
-.match-suggestions h4 {
-  margin: 16px 0 8px;
-  font-size: 14px;
-  color: #333;
+.optimization-intro li {
+  margin-bottom: 8px;
+  line-height: 1.5;
 }
 
-.match-suggestions ul {
-  padding-left: 20px;
-  margin: 0;
-  color: #666;
+.optimization-intro li:last-child {
+  margin-bottom: 0;
 }
 
-.match-actions {
-  margin-top: 24px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
+.optimization-form {
+  max-width: 100%;
 }
 
-.recommendation-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
+.keywords-select {
+  width: 100%;
 }
 
-.recommendation-main h4 {
-  margin: 0 0 8px;
-  font-size: 14px;
-  color: #333;
+.keywords-tip {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 4px;
 }
 
-.recommendation-reason {
-  margin: 0 0 16px;
-  color: #666;
-  text-align: center;
-}
-
-.alternative-templates h4 {
-  margin: 16px 0 8px;
-  font-size: 14px;
-  color: #333;
-}
-
-.template-options {
+.el-checkbox-group {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  justify-content: center;
 }
 
-.template-option {
-  width: 90px;
-  cursor: pointer;
-  border-radius: 4px;
-  padding: 4px;
-  transition: all 0.3s;
+.el-checkbox {
+  margin-right: 0;
+}
+
+.result-header {
   text-align: center;
-}
-
-.template-option:hover {
+  margin-bottom: 24px;
+  padding: 16px;
   background-color: #f5f7fa;
-}
-
-.template-preview {
-  width: 80px;
-  height: 100px;
-  border: 1px solid #ebeef5;
   border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 4px;
 }
 
-.template-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.template-option span {
-  font-size: 12px;
-  color: #606266;
-}
-
-.optimization-section .el-form {
-  margin-bottom: 16px;
-}
-
-.optimization-result h4 {
-  margin: 0 0 16px;
-  font-size: 16px;
+.result-header h4 {
+  margin: 0 0 8px;
+  font-size: 18px;
   color: #333;
-  text-align: center;
+}
+
+.result-subtitle {
+  margin: 0;
+  color: #909399;
+  font-size: 14px;
+}
+
+.changes-list {
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 24px;
 }
 
 .changes-list h5 {
-  margin: 0 0 8px;
+  margin: 0 0 12px;
   font-size: 14px;
   color: #333;
 }
 
 .changes-list ul {
   padding-left: 20px;
-  margin: 0 0 16px;
-  color: #666;
+  margin: 0;
+  color: #606266;
+}
+
+.changes-list li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.changes-list li:last-child {
+  margin-bottom: 0;
 }
 
 .optimization-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
 }
 
