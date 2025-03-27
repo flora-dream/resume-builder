@@ -93,13 +93,22 @@ class ResumeAgent {
   
   // 优化简历内容
   async optimizeResume(resumeData, targetJob) {
-    await delay(2000); // 模拟API调用延迟
-    
-    // 根据目标职位调整简历内容
-    const optimizedResume = JSON.parse(JSON.stringify(resumeData)); // 深拷贝
-    
-    // 简单示例优化逻辑
-    if (targetJob && targetJob.title) {
+    try {
+      await delay(2000); // 模拟API调用延迟
+      
+      // 如果输入无效，返回原始数据
+      if (!resumeData || typeof resumeData !== 'object' || !targetJob || !targetJob.title) {
+        return {
+          original: resumeData,
+          optimized: resumeData,
+          changes: ["无法优化：数据不完整或无效"]
+        };
+      }
+      
+      // 根据目标职位调整简历内容
+      const optimizedResume = JSON.parse(JSON.stringify(resumeData)); // 深拷贝
+      
+      // 简单示例优化逻辑
       // 调整个人概述以匹配目标职位
       if (optimizedResume.personalInfo && optimizedResume.personalInfo.summary) {
         optimizedResume.personalInfo.summary = this._optimizeSummary(
@@ -109,19 +118,27 @@ class ResumeAgent {
       }
       
       // 重排技能以匹配目标职位
-      if (optimizedResume.skills && optimizedResume.skills.length > 0) {
+      if (optimizedResume.skills && Array.isArray(optimizedResume.skills) && optimizedResume.skills.length > 0) {
         optimizedResume.skills = this._reorderSkills(
           optimizedResume.skills,
           targetJob
         );
       }
+      
+      return {
+        original: resumeData,
+        optimized: optimizedResume,
+        changes: this._identifyChanges(resumeData, optimizedResume)
+      };
+    } catch (error) {
+      console.error('简历优化失败:', error);
+      // 发生错误时返回原始数据
+      return {
+        original: resumeData,
+        optimized: resumeData,
+        changes: ["优化过程中发生错误，请重试"]
+      };
     }
-    
-    return {
-      original: resumeData,
-      optimized: optimizedResume,
-      changes: this._identifyChanges(resumeData, optimizedResume)
-    };
   }
   
   // 根据经验生成简历内容建议
@@ -165,45 +182,89 @@ class ResumeAgent {
   
   // 推荐简历模板
   async recommendTemplate(resumeData) {
-    await delay(800); // 模拟API调用延迟
-    
-    // 基于简历内容和行业进行简单推荐逻辑
-    let recommendedTemplate = 'classic'; // 默认推荐
-    
-    // 检查技术相关关键词
-    const hasTechnicalFocus = this._checkForKeywords(resumeData, [
-      'developer', '开发', '工程师', 'engineer', '编程', 'programming', 
-      'software', '软件', 'coding', '代码', 'technical', '技术'
-    ]);
-    
-    // 检查管理相关关键词
-    const hasManagementFocus = this._checkForKeywords(resumeData, [
-      'manager', '经理', 'director', '总监', 'lead', '负责人', 
-      'supervisor', '主管', 'head', '团队', 'team', 'leadership', '领导'
-    ]);
-    
-    // 检查创意相关关键词
-    const hasCreativeFocus = this._checkForKeywords(resumeData, [
-      'design', '设计', 'creative', '创意', 'artist', '艺术', 
-      'media', '媒体', 'content', '内容', 'ux', 'ui', '用户体验'
-    ]);
-    
-    // 简单的逻辑确定推荐模板
-    if (hasTechnicalFocus) {
-      recommendedTemplate = 'modern'; // 推荐现代模板给技术人员
-    } else if (hasCreativeFocus) {
-      recommendedTemplate = 'creative'; // 推荐创意模板给创意人员
-    } else if (hasManagementFocus) {
-      recommendedTemplate = 'classic'; // 推荐经典模板给管理人员
-    } else {
-      recommendedTemplate = 'minimal'; // 如果无明显倾向，推荐极简模板
+    try {
+      console.log('AgentService: 开始推荐模板');
+      await delay(800); // 模拟API调用延迟
+      
+      // 基于简历内容和行业进行简单推荐逻辑
+      let recommendedTemplate = 'classic'; // 默认推荐
+      
+      // 验证输入
+      if (!resumeData || typeof resumeData !== 'object') {
+        console.warn('AgentService: 简历数据无效，返回默认推荐');
+        return {
+          recommended: recommendedTemplate,
+          reason: this._getRecommendationReason(recommendedTemplate),
+          alternatives: this._getAlternativeRecommendations(recommendedTemplate)
+        };
+      }
+      
+      console.log('AgentService: 检查简历关键词');
+      
+      // 将简历数据转换为字符串进行关键词匹配
+      const resumeText = JSON.stringify(resumeData).toLowerCase();
+      
+      // 技术相关关键词
+      const technicalKeywords = [
+        'developer', '开发', '工程师', 'engineer', '编程', 'programming', 
+        'software', '软件', 'coding', '代码', 'technical', '技术'
+      ];
+      
+      // 管理相关关键词
+      const managementKeywords = [
+        'manager', '经理', 'director', '总监', 'lead', '负责人', 
+        'supervisor', '主管', 'head', '团队', 'team', 'leadership', '领导'
+      ];
+      
+      // 创意相关关键词
+      const creativeKeywords = [
+        'design', '设计', 'creative', '创意', 'artist', '艺术', 
+        'media', '媒体', 'content', '内容', 'ux', 'ui', '用户体验'
+      ];
+      
+      // 直接检查字符串中是否包含关键词
+      const hasTechnicalFocus = technicalKeywords.some(
+        keyword => resumeText.includes(keyword)
+      );
+      
+      const hasManagementFocus = managementKeywords.some(
+        keyword => resumeText.includes(keyword)
+      );
+      
+      const hasCreativeFocus = creativeKeywords.some(
+        keyword => resumeText.includes(keyword)
+      );
+      
+      console.log('AgentService: 关键词检查结果 - 技术:', hasTechnicalFocus, '管理:', hasManagementFocus, '创意:', hasCreativeFocus);
+      
+      // 简单的逻辑确定推荐模板
+      if (hasTechnicalFocus) {
+        recommendedTemplate = 'modern'; // 推荐现代模板给技术人员
+      } else if (hasCreativeFocus) {
+        recommendedTemplate = 'creative'; // 推荐创意模板给创意人员
+      } else if (hasManagementFocus) {
+        recommendedTemplate = 'classic'; // 推荐经典模板给管理人员
+      } else {
+        recommendedTemplate = 'minimal'; // 如果无明显倾向，推荐极简模板
+      }
+      
+      const result = {
+        recommended: recommendedTemplate,
+        reason: this._getRecommendationReason(recommendedTemplate),
+        alternatives: this._getAlternativeRecommendations(recommendedTemplate)
+      };
+      
+      console.log('AgentService: 返回模板推荐结果:', result);
+      return result;
+    } catch (error) {
+      console.error('AgentService: 模板推荐失败:', error);
+      // 如果发生错误，返回默认推荐
+      return {
+        recommended: 'classic',
+        reason: "经典模板布局清晰，适合正式场合和传统行业，突出专业性",
+        alternatives: ['modern', 'creative', 'minimal']
+      };
     }
-    
-    return {
-      recommended: recommendedTemplate,
-      reason: this._getRecommendationReason(recommendedTemplate),
-      alternatives: this._getAlternativeRecommendations(recommendedTemplate)
-    };
   }
   
   // 私有辅助方法
@@ -445,19 +506,34 @@ class ResumeAgent {
   }
   
   _optimizeSummary(summary, targetJob) {
-    // 在实际产品中，这里可以接入更高级的AI优化逻辑
-    return `专业的${targetJob.title}，拥有丰富的行业经验。${summary}`;
+    try {
+      // 确保summary是字符串
+      if (typeof summary !== 'string') {
+        summary = String(summary || '');
+      }
+      
+      // 确保targetJob.title是字符串
+      const jobTitle = typeof targetJob.title === 'string' ? targetJob.title : String(targetJob.title || '');
+      
+      // 在实际产品中，这里可以接入更高级的AI优化逻辑
+      return `专业的${jobTitle}，拥有丰富的行业经验。${summary}`;
+    } catch (error) {
+      console.error('优化概述失败:', error);
+      return summary || '';
+    }
   }
   
   _reorderSkills(skills, targetJob) {
     // 简单的技能重排序逻辑示例
     return skills.sort((a, b) => {
       const aRelevance = targetJob.keywords && targetJob.keywords.some(keyword => 
-        a.toLowerCase().includes(keyword.toLowerCase())
+        (typeof a === 'string' && typeof keyword === 'string') ? 
+        a.toLowerCase().includes(keyword.toLowerCase()) : false
       ) ? 1 : 0;
       
       const bRelevance = targetJob.keywords && targetJob.keywords.some(keyword => 
-        b.toLowerCase().includes(keyword.toLowerCase())
+        (typeof b === 'string' && typeof keyword === 'string') ? 
+        b.toLowerCase().includes(keyword.toLowerCase()) : false
       ) ? 1 : 0;
       
       return bRelevance - aRelevance;
@@ -474,8 +550,19 @@ class ResumeAgent {
   }
   
   _checkForKeywords(resumeData, keywords) {
-    const resumeText = JSON.stringify(resumeData).toLowerCase();
-    return keywords.some(keyword => resumeText.includes(keyword.toLowerCase()));
+    try {
+      if (!resumeData || !keywords || !Array.isArray(keywords)) {
+        return false;
+      }
+      
+      const resumeText = JSON.stringify(resumeData).toLowerCase();
+      return keywords.some(keyword => 
+        typeof keyword === 'string' && resumeText.includes(keyword.toLowerCase())
+      );
+    } catch (error) {
+      console.error('关键词检查失败:', error);
+      return false;
+    }
   }
   
   _getRecommendationReason(template) {

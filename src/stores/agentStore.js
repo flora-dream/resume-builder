@@ -128,7 +128,29 @@ export const useAgentStore = defineStore('agent', {
     async getTemplateRecommendation(resumeData) {
       try {
         this.startTask('template-recommendation');
+        
+        // 确保resumeData不为空
+        if (!resumeData || typeof resumeData !== 'object') {
+          console.error('无效的简历数据:', resumeData);
+          this.setError('无效的简历数据');
+          return null;
+        }
+        
+        // 添加调试日志
+        console.log('AgentStore: 获取模板推荐，简历数据类型:', typeof resumeData);
+        
         const recommendation = await agentService.recommendTemplate(resumeData);
+        
+        // 检查推荐结果
+        if (!recommendation) {
+          console.error('模板推荐服务返回空结果');
+          this.setError('模板推荐服务返回空结果');
+          return null;
+        }
+        
+        console.log('AgentStore: 获得模板推荐结果:', recommendation);
+        
+        // 设置推荐结果
         this.templateRecommendation = recommendation;
         
         // 添加推荐结果到历史记录
@@ -139,9 +161,11 @@ export const useAgentStore = defineStore('agent', {
         });
         
         this.finishTask(true);
+        this.saveSessionToStorage();
         return recommendation;
       } catch (error) {
-        this.setError(`模板推荐失败: ${error.message}`);
+        console.error('模板推荐失败:', error);
+        this.setError(`模板推荐失败: ${error.message || '未知错误'}`);
         return null;
       }
     },
@@ -150,6 +174,17 @@ export const useAgentStore = defineStore('agent', {
     async optimizeResume(resumeData, targetJob) {
       try {
         this.startTask('resume-optimization');
+        
+        if (!resumeData || typeof resumeData !== 'object') {
+          this.setError('无效的简历数据');
+          return null;
+        }
+        
+        if (!targetJob || !targetJob.title) {
+          this.setError('请提供目标职位信息');
+          return null;
+        }
+        
         const result = await agentService.optimizeResume(resumeData, targetJob);
         this.optimizationResult = result;
         
@@ -161,9 +196,10 @@ export const useAgentStore = defineStore('agent', {
         });
         
         this.finishTask(true);
+        this.saveSessionToStorage();
         return result;
       } catch (error) {
-        this.setError(`简历优化失败: ${error.message}`);
+        this.setError(`简历优化失败: ${error.message || '未知错误'}`);
         return null;
       }
     },
