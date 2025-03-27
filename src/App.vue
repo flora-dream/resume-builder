@@ -1,16 +1,23 @@
 <template>
   <router-view />
+  <agent-assistant />
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
 import { useResumeStore } from './stores/resumeStore';
+import { useAgentStore } from './stores/agentStore';
+import AgentAssistant from './components/agent/AgentAssistant.vue';
 
 const resumeStore = useResumeStore();
+const agentStore = useAgentStore();
 
 onMounted(() => {
   // 从本地存储加载数据
   resumeStore.loadFromLocalStorage();
+  
+  // 加载Agent会话状态
+  agentStore.loadSessionFromStorage();
 });
 </script>
 
