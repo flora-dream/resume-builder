@@ -56,17 +56,43 @@ const suggestionsDatabase = {
 class ResumeAgent {
   // 分析简历内容
   async analyzeResume(resumeData) {
-    await delay(1000); // 模拟API调用延迟
-    
-    // 简单分析逻辑
-    const analysis = {
-      completeness: this._calculateCompleteness(resumeData),
-      suggestions: this._generateSuggestions(resumeData),
-      strengths: this._identifyStrengths(resumeData),
-      weaknesses: this._identifyWeaknesses(resumeData)
-    };
-    
-    return analysis;
+    try {
+      // 调用后端API
+      const response = await fetch('http://localhost:8000/api/v1/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(resumeData),
+        timeout: 30000, // 30秒超时
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('简历分析API错误:', errorData);
+        throw new Error(`API错误: ${errorData.detail || '未知错误'}`);
+      }
+      
+      const analysis = await response.json();
+      return analysis;
+    } catch (error) {
+      console.error('简历分析请求失败:', error);
+      
+      // 出错时返回默认分析
+      return {
+        completeness: { 
+          percentage: 0, 
+          missingFields: ["API请求失败"] 
+        },
+        strengths: ["无法连接到分析服务"],
+        suggestions: {
+          general: [`连接API失败: ${error.message}`],
+          experience: [],
+          skills: [],
+          education: []
+        }
+      };
+    }
   }
   
   // 生成职位匹配建议
