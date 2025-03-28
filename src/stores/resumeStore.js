@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import resumeService from '../services/resumeService'
 
 export const useResumeStore = defineStore('resume', {
   state: () => ({
@@ -53,7 +54,11 @@ export const useResumeStore = defineStore('resume', {
         description: '现代专业风格，平衡视觉效果和内容展示',
         thumbnail: 'modern-preview'
       }
-    }
+    },
+    // 添加简历分析相关状态
+    resumeAnalysis: null,
+    isAnalyzing: false,
+    analysisError: null
   }),
   
   actions: {
@@ -175,6 +180,35 @@ export const useResumeStore = defineStore('resume', {
     updateCertifications(certifications) {
       this.resumeData.certifications = certifications;
       this.saveToLocalStorage();
+    },
+    
+    // 新增：调用API分析简历
+    async analyzeResume() {
+      try {
+        this.isAnalyzing = true;
+        this.analysisError = null;
+        
+        // 调用简历分析服务
+        const analysis = await resumeService.analyzeResume(this.resumeData);
+        
+        // 保存分析结果
+        this.resumeAnalysis = analysis;
+        this.isAnalyzing = false;
+        
+        return analysis;
+      } catch (error) {
+        this.isAnalyzing = false;
+        this.analysisError = error.message || '简历分析失败';
+        console.error('简历分析失败:', error);
+        throw error;
+      }
+    },
+    
+    // 重置分析结果
+    resetAnalysis() {
+      this.resumeAnalysis = null;
+      this.analysisError = null;
+      this.isAnalyzing = false;
     }
   },
   

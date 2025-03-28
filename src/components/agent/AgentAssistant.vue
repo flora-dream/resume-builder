@@ -25,6 +25,16 @@
         <el-button size="small" type="text" @click="clearError">重试</el-button>
       </div>
       
+      <!-- 分析错误处理 -->
+      <div v-else-if="analysisError" class="agent-error">
+        <el-icon><Warning /></el-icon>
+        <span>{{ analysisError }}</span>
+        <div class="error-actions">
+          <el-button size="small" type="primary" @click="testConnection">测试连接</el-button>
+          <el-button size="small" type="text" @click="clearAnalysisError">重试</el-button>
+        </div>
+      </div>
+      
       <div v-else class="agent-features">
         <template v-if="!currentSection">
           <div class="feature-intro">
@@ -249,7 +259,8 @@
 import { reactive, ref, computed } from 'vue';
 import { useAgentStore } from '../../stores/agentStore';
 import { useResumeStore } from '../../stores/resumeStore';
-import { ElMessage } from 'element-plus';
+import resumeService from '../../services/resumeService';
+import { ElMessage, ElNotification } from 'element-plus';
 import { 
   Check, 
   Loading, 
@@ -312,6 +323,7 @@ export default {
     const error = computed(() => agentStore.error);
     const currentAnalysis = computed(() => agentStore.currentAnalysis);
     const optimizationResult = computed(() => agentStore.optimizationResult);
+    const analysisError = computed(() => agentStore.analysisError);
     
     // 方法
     const toggleAgent = () => {
@@ -338,9 +350,29 @@ export default {
     };
     
     const startAnalysis = async () => {
-      currentSection.value = 'analysis';
-      const resumeData = resumeStore.resumeData;
-      await agentStore.analyzeResume(resumeData);
+      try {
+        currentSection.value = 'analysis';
+        const resumeData = resumeStore.resumeData;
+        
+        // 清除之前的错误
+        clearAnalysisError();
+        
+        // 调用API测试
+        try {
+          const testResult = await resumeService.testConnection(resumeData);
+          if (!testResult.valid) {
+            console.warn('数据验证未通过，但继续尝试分析', testResult.errors);
+          }
+        } catch (e) {
+          console.warn('API连接测试失败，但继续尝试分析', e);
+        }
+        
+        // 执行分析
+        await agentStore.analyzeResume(resumeData);
+      } catch (error) {
+        console.error('分析过程出错', error);
+        agentStore.setAnalysisError(`分析失败: ${error.message}`);
+      }
     };
     
     const showOptimizationSection = () => {
@@ -386,6 +418,34 @@ export default {
       return 'exception';
     };
     
+    const clearAnalysisError = () => {
+      agentStore.setAnalysisError(null);
+    };
+    
+    const testConnection = async () => {
+      try {
+        const resumeData = resumeStore.resumeData;
+        const result = await resumeService.testConnection(resumeData);
+        
+        // 显示测试结果
+        ElNotification({
+          title: result.valid ? '连接成功' : '连接失败',
+          message: result.valid 
+            ? '数据格式验证通过，API连接正常' 
+            : `验证失败: ${JSON.stringify(result.errors)}`,
+          type: result.valid ? 'success' : 'error',
+          duration: 5000
+        });
+      } catch (error) {
+        ElNotification({
+          title: '连接测试失败',
+          message: `API连接失败: ${error.message}`,
+          type: 'error',
+          duration: 5000
+        });
+      }
+    };
+    
     return {
       isActive,
       isLoading,
@@ -406,7 +466,10 @@ export default {
       showOptimizationSection,
       startOptimization,
       applyOptimization,
-      getCompletenessStatus
+      getCompletenessStatus,
+      analysisError,
+      clearAnalysisError,
+      testConnection
     };
   }
 };
