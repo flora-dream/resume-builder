@@ -16,8 +16,8 @@
         <template #title>
           <div class="collapse-title">
             <span>{{ project.name || '未命名项目' }}</span>
-            <span class="project-date" v-if="project.startDate || project.endDate">
-              {{ project.startDate }}{{ project.endDate ? ` - ${project.endDate}` : '' }}
+            <span class="project-date" v-if="project.time">
+              {{ project.time }}
             </span>
           </div>
         </template>
@@ -26,37 +26,31 @@
           <el-form-item label="项目名称">
             <el-input 
               v-model="project.name" 
-              placeholder="请输入项目名称" 
+              placeholder="例如：智能客服系统（NLP方向）" 
               @change="updateProjects" 
               clearable 
             />
           </el-form-item>
           
-          <el-row :gutter="16">
-            <el-col :span="12">
-              <el-form-item label="开始日期">
+          <el-row :gutter="20">
+            <el-col :span="24" :md="12">
+              <el-form-item label="角色">
                 <el-input 
-                  v-model="project.startDate" 
-                  placeholder="例如：2021.03" 
+                  v-model="project.role" 
+                  placeholder="例如：算法工程师 & 后端开发" 
                   @change="updateProjects" 
-                  clearable
-                  class="date-input"
-                >
-                  <template #prefix>
-                    <el-icon><Calendar /></el-icon>
-                  </template>
-                </el-input>
+                  clearable 
+                />
               </el-form-item>
             </el-col>
             
-            <el-col :span="12">
-              <el-form-item label="结束日期">
+            <el-col :span="24" :md="12">
+              <el-form-item label="时间">
                 <el-input 
-                  v-model="project.endDate" 
-                  placeholder="例如：2021.09" 
+                  v-model="project.time" 
+                  placeholder="例如：2021.09-2022.06" 
                   @change="updateProjects" 
                   clearable
-                  class="date-input"
                 >
                   <template #prefix>
                     <el-icon><Calendar /></el-icon>
@@ -66,122 +60,85 @@
             </el-col>
           </el-row>
           
-          <el-form-item label="项目链接">
-            <el-input v-model="project.url" placeholder="项目URL（可选）" @change="updateProjects" clearable>
-              <template #prefix>
-                <el-icon><Link /></el-icon>
-              </template>
-            </el-input>
+          <el-form-item label="技术栈">
+            <el-tooltip content="输入技术名称后按回车添加" placement="top">
+              <el-select
+                v-model="project.technologies"
+                multiple
+                filterable
+                allow-create
+                default-first-option
+                :reserve-keyword="false"
+                placeholder="添加关键技术和工具"
+                style="width: 100%"
+                @change="updateProjects"
+              >
+                <el-option
+                  v-for="tech in commonTechnologies"
+                  :key="tech"
+                  :label="tech"
+                  :value="tech"
+                />
+              </el-select>
+            </el-tooltip>
           </el-form-item>
           
-          <el-tabs type="border-card" class="project-tabs">
-            <el-tab-pane label="基本信息">
-              <el-form-item label="项目描述">
-                <el-input 
-                  v-model="project.description" 
-                  type="textarea" 
-                  :rows="3"
-                  placeholder="描述项目的背景、目标和您的职责"
-                  @change="updateProjects"
-                />
-              </el-form-item>
-              
-              <el-form-item label="项目价值">
-                <el-input 
-                  v-model="project.value" 
-                  type="textarea" 
-                  :rows="2" 
-                  placeholder="描述项目的业务价值和意义"
-                  @change="updateProjects"
-                />
-              </el-form-item>
-            </el-tab-pane>
+          <el-divider>项目描述</el-divider>
+          
+          <div class="project-description">
+            <div class="description-section">
+              <div class="section-title">
+                <el-tag size="small" type="success" effect="plain">目标</el-tag>
+              </div>
+              <el-input 
+                v-model="project.objective" 
+                type="textarea" 
+                :rows="2"
+                placeholder="例如：为企业客户提供自动化问答服务，降低人工客服成本"
+                @change="updateProjects"
+              />
+            </div>
             
-            <el-tab-pane label="技术与成果">
-              <el-form-item label="关键技术">
-                <el-tooltip content="输入技术名称后按回车添加" placement="top">
-                  <el-select
-                    v-model="project.technologies"
-                    multiple
-                    filterable
-                    allow-create
-                    default-first-option
-                    :reserve-keyword="false"
-                    placeholder="添加关键技术和工具"
-                    style="width: 100%"
-                    @change="updateProjects"
-                  >
-                    <el-option
-                      v-for="tech in commonTechnologies"
-                      :key="tech"
-                      :label="tech"
-                      :value="tech"
-                    />
-                  </el-select>
-                </el-tooltip>
-              </el-form-item>
-              
-              <el-divider content-position="left">项目亮点</el-divider>
-              
-              <div class="highlight-container">
-                <div v-for="(highlight, i) in project.highlights || []" :key="i" class="highlight-item">
+            <div class="description-section">
+              <div class="section-title">
+                <el-tag size="small" type="warning" effect="plain">职责</el-tag>
+              </div>
+              <div class="responsibility-container">
+                <div v-for="(resp, i) in project.responsibilities || []" :key="i" class="responsibility-item">
                   <el-input 
-                    v-model="project.highlights[i]" 
-                    placeholder="请输入项目亮点或成就"
+                    v-model="project.responsibilities[i]" 
+                    placeholder="例如：基于BERT预训练模型微调，实现意图识别准确率92%"
                     @change="updateProjects"
                   >
                     <template #prefix>
-                      <el-icon><Star /></el-icon>
+                      <el-icon><StarFilled /></el-icon>
                     </template>
                     <template #append>
-                      <el-button @click="removeHighlight(project, i)">
+                      <el-button @click="removeResponsibility(project, i)">
                         <el-icon><Delete /></el-icon>
+                      </el-button>
+                      <el-button v-if="i === (project.responsibilities.length - 1)" @click="addResponsibility(project)">
+                        <el-icon><Plus /></el-icon>
                       </el-button>
                     </template>
                   </el-input>
                 </div>
-                <el-button 
-                  type="success" 
-                  size="small" 
-                  plain 
-                  @click="addHighlight(project)" 
-                  class="add-highlight-btn"
-                >
-                  <el-icon><Plus /></el-icon> 添加亮点
-                </el-button>
               </div>
-              
-              <el-divider content-position="left">项目成果</el-divider>
-              
-              <div class="outcome-container">
-                <div v-for="(outcome, outcomeIndex) in project.outcomes || []" :key="outcomeIndex" class="outcome-item">
-                  <el-input 
-                    v-model="project.outcomes[outcomeIndex]" 
-                    placeholder="项目取得的具体成果或量化结果"
-                    @change="updateProjects"
-                  >
-                    <template #prefix>
-                      <el-icon><Trophy /></el-icon>
-                    </template>
-                    <template #append>
-                      <el-button @click="removeOutcome(index, outcomeIndex)">
-                        <el-icon><Delete /></el-icon>
-                      </el-button>
-                    </template>
-                  </el-input>
-                </div>
-                <el-button 
-                  type="success" 
-                  size="small" 
-                  plain 
-                  @click="addOutcome(index)"
-                  class="add-outcome-btn"
-                >
-                  <el-icon><Plus /></el-icon> 添加成果
-                </el-button>
+            </div>
+            
+            <div class="description-section">
+              <div class="section-title">
+                <el-tag size="small" type="danger" effect="plain">成果</el-tag>
               </div>
-            </el-tab-pane>
-          </el-tabs>
+              <el-input 
+                v-model="project.achievement" 
+                type="textarea" 
+                :rows="2"
+                placeholder="例如：系统上线后客户问题解决率提升40%，节省人力成本60%"
+                @change="updateProjects"
+              />
+            </div>
+          </div>
           
           <div class="form-actions">
             <el-popconfirm
@@ -208,9 +165,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick } from 'vue';
+import { ref, reactive, onMounted, nextTick } from 'vue';
 import { useResumeStore } from '../../stores/resumeStore';
-import { Delete, Plus, Star, Trophy, Link, CopyDocument, Calendar, Monitor } from '@element-plus/icons-vue';
+import { Delete, Plus, Calendar, Monitor, CopyDocument, StarFilled } from '@element-plus/icons-vue';
 
 const resumeStore = useResumeStore();
 
@@ -226,21 +183,21 @@ const commonTechnologies = [
   'HTML/CSS', 'SASS/LESS', 'Webpack', 'Vite',
   'MongoDB', 'MySQL', 'PostgreSQL', 'Redis',
   'Docker', 'Kubernetes', 'AWS', 'Azure',
-  'Git', 'CI/CD', 'RESTful API', 'GraphQL'
+  'Git', 'CI/CD', 'RESTful API', 'GraphQL',
+  'BERT', 'Transformer', 'Django', 'Flask', 'FastAPI',
+  'PyTorch', 'TensorFlow', 'Hadoop', 'Spark'
 ];
 
 // 添加项目
 const addProject = () => {
   const newProject = {
     name: '',
-    startDate: '',
-    endDate: '',
-    url: '',
-    description: '',
-    value: '',
+    role: '',
+    time: '',
     technologies: [],
-    highlights: [''],
-    outcomes: ['']
+    objective: '',
+    responsibilities: [''],
+    achievement: ''
   };
   
   projectsList.push(newProject);
@@ -273,33 +230,18 @@ const duplicateProject = (index) => {
   updateProjects();
 };
 
-// 添加项目亮点
-const addHighlight = (project) => {
-  if (!project.highlights) {
-    project.highlights = [];
+// 添加职责
+const addResponsibility = (project) => {
+  if (!project.responsibilities) {
+    project.responsibilities = [];
   }
-  project.highlights.push('');
+  project.responsibilities.push('');
   updateProjects();
 };
 
-// 删除项目亮点
-const removeHighlight = (project, index) => {
-  project.highlights.splice(index, 1);
-  updateProjects();
-};
-
-// 添加项目成果
-const addOutcome = (index) => {
-  if (!projectsList[index].outcomes) {
-    projectsList[index].outcomes = [];
-  }
-  projectsList[index].outcomes.push('');
-  updateProjects();
-};
-
-// 删除项目成果
-const removeOutcome = (index, outcomeIndex) => {
-  projectsList[index].outcomes.splice(outcomeIndex, 1);
+// 删除职责
+const removeResponsibility = (project, index) => {
+  project.responsibilities.splice(index, 1);
   updateProjects();
 };
 
@@ -321,12 +263,19 @@ onMounted(() => {
       // 确保所有项目有正确的默认字段
       projectsList.push({
         name: item.name || '',
+        role: item.role || '',
+        time: item.time || '',
+        technologies: item.technologies || [],
+        objective: item.objective || '',
+        responsibilities: item.responsibilities || [''],
+        achievement: item.achievement || '',
+        // 保留原有数据，兼容旧格式
         startDate: item.startDate || '',
         endDate: item.endDate || '',
         url: item.url || '',
         description: item.description || '',
         value: item.value || '',
-        technologies: item.technologies || [],
+        techStack: item.techStack || '',
         highlights: item.highlights || [],
         outcomes: item.outcomes || []
       });
@@ -381,16 +330,29 @@ onMounted(() => {
   font-weight: normal;
 }
 
-.highlight-container, .outcome-container {
+.project-description {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.description-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  margin-bottom: 8px;
+}
+
+.responsibility-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 15px;
 }
 
-.add-highlight-btn, .add-outcome-btn {
-  align-self: flex-start;
-  margin-top: 5px;
+.responsibility-item {
+  margin-bottom: 8px;
 }
 
 .form-actions {
@@ -398,19 +360,6 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
-}
-
-.project-tabs {
-  margin-bottom: 20px;
-}
-
-:deep(.el-tabs__content) {
-  padding: 20px;
-}
-
-:deep(.el-divider__text) {
-  font-size: 14px;
-  color: #606266;
 }
 
 :deep(.el-collapse-item__header) {
@@ -421,22 +370,14 @@ onMounted(() => {
   padding: 20px 15px;
 }
 
-/* 调整日期输入框样式 */
-.date-input {
-  width: 100%;
-}
-
-.date-input :deep(.el-input__wrapper) {
-  padding-right: 8px;
-}
-
-.date-input :deep(.el-input__prefix) {
-  margin-right: 4px;
-}
-
-/* 调整表单项间距 */
 :deep(.el-form-item) {
   margin-bottom: 18px;
+}
+
+:deep(.el-divider__text) {
+  font-size: 14px;
+  color: #606266;
+  font-weight: bold;
 }
 
 /* 优化小屏幕上的布局 */
@@ -444,19 +385,19 @@ onMounted(() => {
   :deep(.el-form-item) {
     margin-bottom: 15px;
   }
-  
-  .el-row {
-    --el-gutter-x: 12px;
-  }
-  
-  :deep(.el-form-item__label) {
-    padding-right: 4px;
-    font-size: 13px;
-  }
-  
-  /* 在小屏幕上调整日期字段的布局 */
-  .date-input :deep(.el-input__wrapper) {
-    padding: 0 8px;
-  }
+}
+
+:deep(.el-input-group__append) {
+  padding: 0;
+}
+
+:deep(.el-input-group__append .el-button) {
+  border: none;
+  margin: 0;
+  border-radius: 0;
+}
+
+:deep(.el-input-group__append .el-button:first-child) {
+  border-right: 1px solid #dcdfe6;
 }
 </style> 

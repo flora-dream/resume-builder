@@ -69,45 +69,42 @@
             <div v-for="(project, index) in resumeData.projects" :key="index" class="project-item">
               <div class="project-header">
                 <h3 class="project-title">{{ project.name }}</h3>
-                <span class="project-date">{{ project.startDate }}{{ project.endDate ? ` - ${project.endDate}` : '' }}</span>
-              </div>
-              
-              <p class="project-description">{{ project.description }}</p>
-              
-              <div v-if="project.value" class="project-value">
-                <span class="value-label">项目价值：</span>
-                <span class="value-content">{{ project.value }}</span>
-              </div>
-              
-              <div v-if="project.technologies && project.technologies.length > 0" class="project-technologies">
-                <span class="tech-label">关键技术：</span>
-                <div class="tech-tags">
-                  <span v-for="(tech, techIndex) in project.technologies" :key="techIndex" class="tech-tag">
-                    {{ tech }}
-                  </span>
+                <div class="project-meta">
+                  <span v-if="project.role" class="project-role">{{ project.role }}</span>
+                  <span class="project-date">{{ project.time }}</span>
                 </div>
               </div>
               
-              <div v-if="project.highlights && project.highlights.length > 0" class="project-highlights">
-                <span class="highlights-label">项目亮点：</span>
-                <ul class="highlights-list">
-                  <li v-for="(highlight, highlightIndex) in project.highlights" :key="highlightIndex">
-                    {{ highlight }}
-                  </li>
-                </ul>
-              </div>
-              
-              <div v-if="project.outcomes && project.outcomes.length > 0" class="project-outcomes">
-                <span class="outcomes-label">项目成果：</span>
-                <ul class="outcomes-list">
-                  <li v-for="(outcome, outcomeIndex) in project.outcomes" :key="outcomeIndex">
-                    {{ outcome }}
-                  </li>
-                </ul>
-              </div>
-              
-              <div v-if="project.url" class="project-link">
-                <a :href="project.url" target="_blank">项目链接</a>
+              <div class="project-content">
+                <div v-if="project.technologies && project.technologies.length > 0" class="project-detail tech-section">
+                  <span class="detail-label">技术：</span>
+                  <div class="tech-tags">
+                    <span v-for="(tech, techIndex) in project.technologies" :key="techIndex" class="tech-tag">
+                      {{ tech }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div v-if="project.objective" class="project-detail">
+                  <span class="detail-label">目标：</span>
+                  <span class="detail-content">{{ project.objective }}</span>
+                </div>
+
+                <div v-if="project.responsibilities && project.responsibilities.length > 0" class="project-detail">
+                  <span class="detail-label">职责：</span>
+                  <div class="detail-list-container">
+                    <ul class="detail-list">
+                      <li v-for="(resp, respIndex) in project.responsibilities" :key="respIndex">
+                        {{ resp }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div v-if="project.achievement" class="project-detail">
+                  <span class="detail-label">成果：</span>
+                  <span class="detail-content">{{ project.achievement }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -382,14 +379,14 @@ const computedStyles = computed(() => {
 .experience-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 10px;
 }
 
 .experience-item {
   padding-left: 15px;
   border-left: 2px solid var(--accent-color, #f0f0f0);
   position: relative;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
 }
 
 .experience-item::before {
@@ -407,19 +404,20 @@ const computedStyles = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .experience-company-position {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .experience-company {
   margin: 0;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--primary-color, #3a7bd5);
+  color: #303133;
   line-height: 1.3;
   position: relative;
   display: inline-block;
@@ -443,122 +441,175 @@ const computedStyles = computed(() => {
 }
 
 .experience-position {
-  margin: 3px 0 0;
-  font-size: 13px;
+  margin: 0;
+  font-size: 12px;
   font-weight: 500;
-  color: #444;
+  color: #606266;
   line-height: 1.3;
 }
 
 .experience-period {
   font-size: 12px;
-  color: #777;
+  color: #909399;
   white-space: nowrap;
-  background-color: rgba(0,0,0,0.03);
-  padding: 2px 6px;
+  background-color: #f0f2f5;
+  padding: 0 6px;
+  height: 18px;
+  line-height: 18px;
   border-radius: 3px;
   margin-top: 2px;
 }
 
 .experience-description {
   margin: 6px 0;
-  font-size: 13px;
-  color: #555;
+  font-size: 12px;
+  color: #606266;
   line-height: 1.4;
 }
 
 .achievements-list {
-  margin: 8px 0 0;
-  padding-left: 18px;
+  margin: 0;
+  padding-left: 14px;
 }
 
 .achievements-list li {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   position: relative;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.4;
-  color: #555;
+  color: #606266;
 }
 
 /* 项目经验样式 */
 .projects-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .project-item {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
 }
 
 .project-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
 }
 
 .project-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #ebeef5;
 }
 
 .project-title {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--primary-color, #3a7bd5);
-  position: relative;
-  display: inline-block;
+  color: #303133;
 }
 
-.project-title::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 2px;
-  transform: scaleX(0);
-  background-color: var(--secondary-color, #00d2ff);
-  transition: transform 0.3s;
-  transform-origin: left;
+.project-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.project-item:hover .project-title::after {
-  transform: scaleX(1);
+.project-role {
+  font-size: 12px;
+  color: #606266;
 }
 
 .project-date {
   font-size: 12px;
-  color: #888;
+  color: #909399;
+  background-color: #f0f2f5;
+  padding: 0 6px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 3px;
 }
 
-.project-description {
-  margin: 8px 0 12px;
-  font-size: 14px;
-  color: #555;
-  line-height: 1.5;
+.project-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.project-link {
-  margin-top: 8px;
+.project-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
 }
 
-.project-link a {
-  color: var(--primary-color, #3a7bd5);
-  font-size: 13px;
-  text-decoration: none;
-  display: inline-flex;
+.detail-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #606266;
+  white-space: nowrap;
+  min-width: 36px;
+}
+
+.detail-content {
+  font-size: 12px;
+  color: #606266;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.detail-list-container {
+  flex: 1;
+}
+
+.detail-list {
+  margin: 0;
+  padding-left: 14px;
+}
+
+.detail-list li {
+  font-size: 12px;
+  color: #606266;
+  line-height: 1.4;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.tech-section {
   align-items: center;
+  margin-bottom: 4px;
 }
 
-.project-link a:hover {
-  text-decoration: underline;
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.tech-tag {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+  line-height: 1;
+  border-radius: 10px;
+  white-space: nowrap;
+  color: #606266;
+  background-color: #f0f2f5;
+  box-sizing: border-box;
+}
+
+.tech-tag:hover {
+  color: #303133;
+  background-color: #e4e7ed;
 }
 
 /* 技能样式 */
@@ -899,98 +950,5 @@ const computedStyles = computed(() => {
     opacity: 0.3 !important;
     width: 100% !important; /* 在打印时调整长横线宽度 */
   }
-}
-
-/* 项目展示样式 */
-.project-value {
-  margin: 8px 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: #555;
-}
-
-.value-label {
-  font-weight: 600;
-  color: #444;
-  margin-right: 5px;
-}
-
-.project-technologies {
-  margin: 8px 0;
-  display: flex;
-  align-items: flex-start;
-}
-
-.tech-label {
-  font-weight: 600;
-  color: #444;
-  font-size: 13px;
-  margin-right: 5px;
-  white-space: nowrap;
-  padding-top: 2px;
-}
-
-.tech-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.tech-tag {
-  font-size: 11px;
-  background-color: rgba(var(--primary-color-rgb, 58, 123, 213), 0.1);
-  color: var(--primary-color, #3a7bd5);
-  padding: 2px 8px;
-  border-radius: 10px;
-  white-space: nowrap;
-}
-
-.project-outcomes {
-  margin: 8px 0;
-}
-
-.outcomes-label {
-  font-weight: 600;
-  color: #444;
-  font-size: 13px;
-  display: block;
-  margin-bottom: 4px;
-}
-
-.outcomes-list {
-  margin: 4px 0 0 0;
-  padding-left: 18px;
-}
-
-.outcomes-list li {
-  font-size: 13px;
-  color: #555;
-  line-height: 1.4;
-  margin-bottom: 3px;
-}
-
-/* 添加项目亮点的样式 */
-.project-highlights {
-  margin: 8px 0;
-}
-
-.highlights-label {
-  font-weight: 600;
-  color: #444;
-  font-size: 13px;
-  display: block;
-  margin-bottom: 4px;
-}
-
-.highlights-list {
-  margin: 4px 0 0 0;
-  padding-left: 18px;
-}
-
-.highlights-list li {
-  font-size: 13px;
-  color: #555;
-  line-height: 1.4;
-  margin-bottom: 3px;
 }
 </style>
