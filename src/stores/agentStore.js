@@ -12,7 +12,8 @@ export const useAgentStore = defineStore('agent', {
     templateRecommendation: null,
     optimizationResult: null,
     agentHistory: [],
-    error: null
+    error: null,
+    analysisError: null
   }),
   
   actions: {
@@ -57,11 +58,38 @@ export const useAgentStore = defineStore('agent', {
       });
     },
     
+    setAnalysisError(error) {
+      this.analysisError = error;
+      this.isLoading = false;
+      
+      // 记录分析错误到历史记录
+      if (error) {
+        this.agentHistory.push({
+          type: 'analysis-error',
+          message: error,
+          timestamp: new Date().toISOString()
+        });
+      }
+    },
+    
     // 分析简历内容
     async analyzeResume(resumeData) {
       try {
         this.startTask('resume-analysis');
+        
+        // 添加验证，确保resumeData不为空
+        if (!resumeData || typeof resumeData !== 'object') {
+          throw new Error('简历数据无效或为空');
+        }
+        
+        console.log('AgentStore: 开始分析简历', resumeData);
         const analysis = await agentService.analyzeResume(resumeData);
+        
+        // 验证分析结果
+        if (!analysis || !analysis.completeness || !analysis.strengths || !analysis.suggestions) {
+          throw new Error('收到无效的分析结果');
+        }
+        
         this.currentAnalysis = analysis;
         
         // 添加分析结果到历史记录
@@ -74,6 +102,7 @@ export const useAgentStore = defineStore('agent', {
         this.finishTask(true);
         return analysis;
       } catch (error) {
+        console.error('AgentStore: 简历分析失败', error);
         this.setError(`简历分析失败: ${error.message}`);
         return null;
       }

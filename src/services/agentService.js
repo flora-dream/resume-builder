@@ -1,5 +1,8 @@
 // agentService.js - 基础的AI Agent服务
 
+// 导入API服务
+import resumeService from './resumeService';
+
 // 模拟API调用的延迟
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -57,41 +60,16 @@ class ResumeAgent {
   // 分析简历内容
   async analyzeResume(resumeData) {
     try {
-      // 调用后端API
-      const response = await fetch('http://localhost:8000/api/v1/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(resumeData),
-        timeout: 30000, // 30秒超时
-      });
+      console.log('AgentService: 开始分析简历');
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('简历分析API错误:', errorData);
-        throw new Error(`API错误: ${errorData.detail || '未知错误'}`);
-      }
+      // 调用后端API进行分析
+      const analysis = await resumeService.analyzeResume(resumeData);
+      console.log('AgentService: 获得分析结果', analysis);
       
-      const analysis = await response.json();
       return analysis;
     } catch (error) {
-      console.error('简历分析请求失败:', error);
-      
-      // 出错时返回默认分析
-      return {
-        completeness: { 
-          percentage: 0, 
-          missingFields: ["API请求失败"] 
-        },
-        strengths: ["无法连接到分析服务"],
-        suggestions: {
-          general: [`连接API失败: ${error.message}`],
-          experience: [],
-          skills: [],
-          education: []
-        }
-      };
+      console.error('AgentService: 简历分析失败', error);
+      throw new Error(error.message || '简历分析服务暂时不可用');
     }
   }
   
