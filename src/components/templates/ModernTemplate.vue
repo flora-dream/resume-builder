@@ -335,7 +335,7 @@ const computedStyles = computed(() => {
 .side-column {
   flex: 1.5;
   background-color: #f7f7f7;
-  padding: 20px;
+  padding: 18px 18px 0 16px;
   border-left: 1px solid #e8e8e8;
 }
 
@@ -734,7 +734,7 @@ const computedStyles = computed(() => {
 .education-degree-major {
   display: flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 13px;
   color: #333;
   line-height: 1.3;
   margin: 0;
@@ -751,7 +751,7 @@ const computedStyles = computed(() => {
 
 .education-description {
   margin: 3px 0 0;
-  font-size: 11px;
+  font-size: 13px;
   color: #666;
   line-height: 1.3;
 }
