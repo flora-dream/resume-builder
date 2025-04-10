@@ -340,7 +340,7 @@ const computedStyles = computed(() => {
 }
 
 .resume-section {
-  margin-bottom: 18px;
+  margin-bottom: 8px;
   position: relative;
 }
 
@@ -382,7 +382,7 @@ const computedStyles = computed(() => {
 .experience-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 10px;
 }
 
 .experience-item {
@@ -490,7 +490,7 @@ const computedStyles = computed(() => {
 .project-item {
   background-color: #f9f9f9;
   border-radius: 8px;
-  padding: 20px;
+  padding: 18px 16px 8px 18px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -540,7 +540,7 @@ const computedStyles = computed(() => {
 
 .project-description {
   margin: 8px 0 12px;
-  font-size: 14px;
+  font-size: 13px;
   color: #555;
   line-height: 1.5;
 }
