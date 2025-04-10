@@ -641,7 +641,7 @@ const computedStyles = computed(() => {
 .skill-points {
   margin: 6px 0 0 0;
   padding-left: 15px;
-  font-size: 12px;
+  font-size: 13px;
   color: #555;
   line-height: 1.4;
 }
