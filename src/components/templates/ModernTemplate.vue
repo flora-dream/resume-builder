@@ -349,7 +349,7 @@ const computedStyles = computed(() => {
   font-size: 18px;
   color: var(--primary-color, #3a7bd5);
   margin-top: 0;
-  margin-bottom: 15px;
+  margin-bottom: -2px;
   padding-bottom: 8px;
   position: relative;
   display: inline-block;
@@ -381,6 +381,8 @@ const computedStyles = computed(() => {
 
 /* 工作经验样式 */
 .experience-list {
+  border-top: 2px solid;
+  padding-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -484,6 +486,8 @@ const computedStyles = computed(() => {
 
 /* 项目经验样式 */
 .projects-list {
+  border-top: 2px solid;
+  padding-top: 12px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
@@ -565,6 +569,8 @@ const computedStyles = computed(() => {
 
 /* 技能样式 */
 .skills-container {
+  border-top: 2px solid;
+  padding-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -677,9 +683,12 @@ const computedStyles = computed(() => {
 
 /* 教育背景样式 */
 .education-list {
+  border-top: 2px solid;
+  padding-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: 18px;
 }
 
 .education-item {
