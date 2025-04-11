@@ -355,6 +355,7 @@ const computedStyles = computed(() => {
   display: inline-block;
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-weight: bold;
 }
 
 .section-title::before {
@@ -470,6 +471,7 @@ const computedStyles = computed(() => {
 .achievements-list {
   margin: 8px 0 0;
   padding-left: 18px;
+  list-style-type: none;
 }
 
 .achievements-list li {
@@ -644,6 +646,7 @@ const computedStyles = computed(() => {
   font-size: 13px;
   color: #555;
   line-height: 1.4;
+  list-style-type: none;
 }
 
 .skill-points li {
@@ -652,14 +655,16 @@ const computedStyles = computed(() => {
 }
 
 .skill-points li:before {
-  content: "";
+  content: "•";
   position: absolute;
   left: -10px;
   top: 6px;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background-color: var(--primary-color, #3a7bd5);
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--primary-color, #3a7bd5);
+  font-size: 12px;
 }
 
 .skill-description {
@@ -839,6 +844,33 @@ const computedStyles = computed(() => {
     print-color-adjust: exact !important;
   }
   
+  .section-title {
+    font-weight: bold !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .highlights-list,
+  .skill-points,
+  .outcomes-list,
+  .achievements-list {
+    list-style-type: none !important;
+  }
+  
+  .highlights-list li:before,
+  .skill-points li:before,
+  .outcomes-list li:before,
+  .achievements-list li:before {
+    content: "•" !important;
+    display: block !important;
+    visibility: visible !important;
+    position: absolute !important;
+    color: var(--primary-color, #3a7bd5) !important;
+    background-color: transparent !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
   .project-item:hover {
     transform: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -854,11 +886,6 @@ const computedStyles = computed(() => {
   }
   
   .skill-bar {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .skill-points li:before {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -883,11 +910,6 @@ const computedStyles = computed(() => {
   }
   
   /* 确保section-title渐变在打印时可见 */
-  .section-title {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
   .section-title::before {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -960,6 +982,7 @@ const computedStyles = computed(() => {
 .outcomes-list {
   margin: 4px 0 0 0;
   padding-left: 18px;
+  list-style-type: none;
 }
 
 .outcomes-list li {
@@ -985,6 +1008,7 @@ const computedStyles = computed(() => {
 .highlights-list {
   margin: 4px 0 0 0;
   padding-left: 18px;
+  list-style-type: none;
 }
 
 .highlights-list li {
@@ -992,5 +1016,17 @@ const computedStyles = computed(() => {
   color: #555;
   line-height: 1.4;
   margin-bottom: 3px;
+  position: relative;
+}
+
+.highlights-list li:before {
+  content: "•";
+  position: absolute;
+  left: -10px;
+  top: 0.5em;
+  width: auto;
+  height: auto;
+  color: var(--primary-color, #3a7bd5);
+  font-size: 12px;
 }
 </style>
